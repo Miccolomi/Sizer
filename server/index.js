@@ -2,7 +2,6 @@ const path = require('path');
 
 const express = require("express");
 const app = express();
-const bodyParser = require('body-parser');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("./db/userModel");
@@ -16,6 +15,12 @@ const bcryptSalt = process.env.BCRYPT_SALT;
 const cors = require('cors');
 const PORT = process.env.PORT || 3001;
 
+// Listen on port ??
+
+  console.log(`_____Application is listening on port ${PORT}!`)
+
+
+
 
 const corsOptions ={
      credentials:true,            //access-control-allow-credentials:true
@@ -25,8 +30,11 @@ const corsOptions ={
  
  
  // body parser configuration
- app.use(bodyParser.json());
- app.use(bodyParser.urlencoded({ extended: true }));
+ const bodyParser = require('body-parser');
+ //app.use(bodyParser.json());
+ //app.use(bodyParser.urlencoded({ extended: true }));
+ //Bodyparser Middleware
+ app.use(express.json())
  
  // require database connection 
 const dbConnect = require("./db/dbConnect");
