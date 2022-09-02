@@ -1,5 +1,4 @@
 import React, { Component, useState  } from 'react';
-import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from "universal-cookie";
 import styles from "./utils/projectlist/styles.module.css";
@@ -7,8 +6,6 @@ import styles from "./utils/projectlist/styles.module.css";
 
 const cookies = new Cookies();
 const token = cookies.get("TOKEN");
-
-
 
 
 //https://codingthesmartway.com/the-mern-stack-tutorial-building-a-react-crud-application-from-start-to-finish-part-3/
@@ -75,7 +72,7 @@ const Todo = props => (
 
 export default class TodosList extends Component {
 
-  
+   
 
     constructor(props) {
         super(props);
@@ -83,12 +80,21 @@ export default class TodosList extends Component {
     }
 
     
+    
     componentDidMount() {
 
+        
       
         var Buffer = require('buffer/').Buffer;
         const user_logon = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString()).userEmail;
-        console.log("_____________user_logon per la query_______________"+ user_logon);
+        console.log("---SICUREZZA CHECK----SONO IN PROJECTLIST e utente che ho trovato è: "+ user_logon);
+
+        if(!user_logon){
+
+            console.log("---SICUREZZA CHECK----SONO IN PROJECTLIST e non ho trovato utente connesso !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            
+            return;
+        }
         
         const configuration = {
          
@@ -107,7 +113,7 @@ export default class TodosList extends Component {
             })
             .catch(function (error){
 
-                console.log(error);
+                console.log("ERRORE IN PROJECT LIST: " + error);
 
                 if(401 == error.response.status) {
                   window.location.href = "/";
@@ -133,10 +139,9 @@ export default class TodosList extends Component {
                             <th>Project</th>
                             <th>UseCase</th>
                             <th>Architecture</th>
-                            <th>Customer Email</th>
+                            <th>Customer Email</th> 
                             <th>Edit</th>
                             <th>Delete</th>
-
                         </tr>
                     </thead>
                     <tbody align="center">
@@ -144,10 +149,10 @@ export default class TodosList extends Component {
                     </tbody>
                 </table>
                 <div align="center">
-                         <button type="submit"  className={styles.blu_btn}   onClick={(e) => {e.preventDefault();  window.location.href='/auth';}} >New Project</button>
+                         <button type="submit"  className={styles.blu_btn}   onClick={(e) => {e.preventDefault();  window.location.assign('/auth'); }} >New Project</button>
                   
                   </div>
-                 
+                
             </div>
 
           

@@ -6,6 +6,7 @@ import Form from 'react-bootstrap/Form';
 import axios from "axios";
 import Cookies from "universal-cookie";
 
+
 import styles from "./utils/newproject/styles.module.css";
 
 
@@ -37,7 +38,7 @@ useEffect(() => {
   if (!ignore) {
    // setUserLogon( JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString()) );
    let email_trovata = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString()).userEmail;
-   console.log("sono in NEW PROJECT AUTH COMPONENT " + email_trovata);
+   console.log("---SICUREZZA CHECK----sono in NEW PROJECT AUTH COMPONENT " + email_trovata);
    setUserLogon(email_trovata);
   
 
@@ -222,7 +223,7 @@ useEffect(() => {
      
 
       <Col>
-      <button type="submit"  className={styles.blu_btn}   onClick={(e) => {e.preventDefault();  window.location.assign('/project_list');}} >Project List</button>
+      <button type="submit"  className={styles.blu_btn}   onClick={(e) => {  window.location.assign('/project_list');}} >Project List</button>
       </Col>
 
       <Col>

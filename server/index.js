@@ -20,8 +20,6 @@ const PORT = process.env.PORT || 3001;
   console.log(`_____Application is listening on port ${PORT}!`)
 
 
-
-
 const corsOptions ={
      credentials:true,            //access-control-allow-credentials:true
      optionSuccessStatus:200
@@ -33,6 +31,7 @@ const corsOptions ={
  const bodyParser = require('body-parser');
  //app.use(bodyParser.json());
  //app.use(bodyParser.urlencoded({ extended: true }));
+
  //Bodyparser Middleware
  app.use(express.json())
  
