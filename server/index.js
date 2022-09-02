@@ -300,13 +300,13 @@ app.use((req, res, next) => {
   })// fine get /info_mongo
   
   // PROJECT LIST endpoint
-  app.get("/project_list", auth, async (request, response) => {
+  app.get("/project_list",  async (request, response) => {
   
     console.log("______sono in APP PROJECT LIST QUERY_____"); 
   // prendo utente loggato
   
      const user_logon = request.query.user;
-     console.log("user_logon: "+ user_logon); 
+     console.log("user_logon che è arrivato dal web: "+ user_logon); 
   
     // query for project that have same user ---> const query = { mongodb_user:  'pippo' };
     const query = {user_logon :user_logon };
@@ -314,7 +314,7 @@ app.use((req, res, next) => {
       // sort returned documents in ascending order by title (A->Z)
       // sort: { customer: 1},
       // Include only the `title` and `imdb` fields in each returned document
-      projection: { customer: 1, project: 1, usecase: 1 },
+      projection: { customer: 1, project: 1, usecase: 1 }, 
     };
               
     try{
@@ -322,7 +322,7 @@ app.use((req, res, next) => {
   
        console.log("______ PROJECT LIST______ fatta query, ottengo questo_____: " + list ); 
    
-      response.status(200).json(list);
+     return response.status(200).json(list);
     //  response.json(list);
   
      }

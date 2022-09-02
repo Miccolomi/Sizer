@@ -83,26 +83,32 @@ export default class TodosList extends Component {
     
     componentDidMount() {
 
-        
-      
+     
+        let user_logon =""
+
+      try{
         var Buffer = require('buffer/').Buffer;
-        const user_logon = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString()).userEmail;
+         user_logon = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString()).userEmail;
         console.log("---SICUREZZA CHECK----SONO IN PROJECTLIST e utente che ho trovato è: "+ user_logon);
-
-        if(!user_logon){
-
-            console.log("---SICUREZZA CHECK----SONO IN PROJECTLIST e non ho trovato utente connesso !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+      }
+      catch(error){
+        console.log("---SICUREZZA CHECK----SONO IN PROJECTLIST e non ho trovato utente connesso !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + error);
             
-            return;
-        }
+        return;
+
+      }
         
-        const configuration = {
+      /*
+  headers: {
+            Authorization: `Bearer ${token}`,
+          },
+      */
+        
+        const configuration = { 
          
           method: "get",
           url: "/project_list",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      
            params: { user: user_logon }
         };
 
