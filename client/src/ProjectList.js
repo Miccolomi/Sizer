@@ -8,6 +8,7 @@ const cookies = new Cookies();
 const token = cookies.get("TOKEN");
 
 
+
 //https://codingthesmartway.com/the-mern-stack-tutorial-building-a-react-crud-application-from-start-to-finish-part-3/
 
 const Todo = props => (
@@ -74,41 +75,33 @@ export default class TodosList extends Component {
 
    
 
-    constructor(props) {
+    constructor(props) { 
         super(props);
         this.state = {todos: []};
     }
 
-    
-    
+
     componentDidMount() {
 
-     
-        let user_logon =""
+        var user_logon ="vuoto" 
+        var Buffer = require('buffer/').Buffer;
+        console.log("---SICUREZZA CHECK----SONO IN PROJECTLIST e TOKEN TROVATO: "+ token); 
 
       try{
-        var Buffer = require('buffer/').Buffer;
-         user_logon = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString()).userEmail;
+        user_logon = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString()).userEmail;
         console.log("---SICUREZZA CHECK----SONO IN PROJECTLIST e utente che ho trovato è: "+ user_logon);
       }
       catch(error){
-        console.log("---SICUREZZA CHECK----SONO IN PROJECTLIST e non ho trovato utente connesso !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + error);
-            
+        console.log("---SICUREZZA CHECK----SONO IN PROJECTLIST e non ho trovato utente connesso !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + error);  
         return;
-
       }
-        
-      /*
-  headers: {
+            
+        const configuration = { 
+          method: "post", 
+          url: "/project_list",
+          headers: {
             Authorization: `Bearer ${token}`,
           },
-      */
-        
-        const configuration = { 
-         
-          method: "get",
-          url: "/project_list",
-      
            params: { user: user_logon }
         };
 

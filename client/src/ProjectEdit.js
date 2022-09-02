@@ -83,7 +83,6 @@ export default function ProjectEdit() {
   
     useEffect(() => {
 
-  
    
     const id = params.id.toString();
   

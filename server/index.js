@@ -300,25 +300,26 @@ app.use((req, res, next) => {
   })// fine get /info_mongo
   
   // PROJECT LIST endpoint
-  app.get("/project_list",  async (request, response) => {
+  app.post("/project_list", auth, async (request, response) => {
   
-    console.log("______sono in APP PROJECT LIST QUERY_____"); 
+    console.log("______sono in APP PROJECT LIST QUERY_____");  
   // prendo utente loggato
   
      const user_logon = request.query.user;
-     console.log("user_logon che è arrivato dal web: "+ user_logon); 
-  
+     console.log("user_logon che è arrivato da web: "+ user_logon); 
+
+    
     // query for project that have same user ---> const query = { mongodb_user:  'pippo' };
     const query = {user_logon :user_logon };
-    const options = {
+    //const options = {
       // sort returned documents in ascending order by title (A->Z)
       // sort: { customer: 1},
       // Include only the `title` and `imdb` fields in each returned document
-      projection: { customer: 1, project: 1, usecase: 1 }, 
-    };
+    //  projection: { customer: 1, project: 1, usecase: 1 }, 
+    //};
               
     try{
-      const list = await Project.find((query));
+      const list = await Project.find(query);
   
        console.log("______ PROJECT LIST______ fatta query, ottengo questo_____: " + list ); 
    
@@ -327,7 +328,8 @@ app.use((req, res, next) => {
   
      }
      catch(error){
-      response.status(400).json({message: error.message})
+      console.log('_______SONO IN PROJECT EDIT ERRROR__________', error);
+      response.status(400).json({message: error.message});
      }
    
   
