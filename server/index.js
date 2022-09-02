@@ -2,7 +2,7 @@ const path = require('path');
 
 const express = require("express");
 const app = express();
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("./db/userModel");
 const Project = require("./db/projectModel");
@@ -509,8 +509,7 @@ app.use((req, res, next) => {
   // prendo utente
      const utente = await User.findOne({ _id : ObjectId(request.query.id) , change_password : request.query.token });
   
-    //  bcrypt.compare(request.query.token, user.change_password )
-    //  .then((passwordCheck) => {
+
   
         if (utente)
         {
