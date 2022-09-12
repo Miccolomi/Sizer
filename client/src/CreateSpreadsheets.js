@@ -101,7 +101,7 @@ export default  function CreateSpreadsheets() {
       })
  
       .catch(function (error){
-       console.log("SONO IN makeSizer e ho un errore: " + error);
+       console.log("SONO IN makeSizer e ho un errore: " + error.message);
 
                             if(401 == error.response.status) {
                                 window.location.href = "/";
@@ -136,7 +136,7 @@ export default  function CreateSpreadsheets() {
 
                         <Row>
                             <Col>
-                                <button type="submit" className={styles.green_btn}>Save</button>
+                                <button type="submit" className={styles.green_btn}>Make</button>
                             </Col>
                             <Col>
                                 <button type="submit" className={styles.green_btn} onClick={handleClick}>Back</button>                              
