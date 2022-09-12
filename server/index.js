@@ -206,7 +206,6 @@ app.post("/login", async (request, response) => {
 
 })
 
-
 //  ------------------------------------------------------------ce la tua mail di prova devi cambiarla !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // INFO MONGO endpoint
 app.post("/info_mongo", auth, async (request, response) => {
@@ -685,7 +684,6 @@ app.get("/resetPassword", async (request, response) => {
 
 })// end ResetPassword endpoint
 
-
 //UTILIT
 
 app.post("/_getData", async (request, response)=> {
@@ -744,22 +742,29 @@ app.post("/create_spreadsheets", async (request, response) => {
 
     // 1) mi autentico
     const auth = await authorize();
+    console.log("_____ create_spreadsheets sono autorizzato _____");
     // 2) prendo i dati del progetto dal db
     const data = await getProjectData(myquery);
+    console.log("_____ create_spreadsheets ho i dati _____");
 
     let spreadsheetId = data._doc.spreadsheetId; // mi prendo lo spreadsheetId dal DB ma mi serve ??????
-    let docTitle = data._doc.customer +"- "+data._doc.project ; // mi prendo lo spreadsheetId dal DB ma mi serve ??????
-    
+    console.log("_____ create_spreadsheets id: _____"+spreadsheetId);
+
+    let docTitle = data._doc.customer +" - "+data._doc.project ; // mi prendo lo spreadsheetId dal DB ma mi serve ??????
+    console.log("_____ create_spreadsheets docTitle: _____"+data._doc.customer +" - "+data._doc.project );
 
     // se lo trovo nel db lo cerco su GOOGLE
     if(spreadsheetId){
        // se presente su DB devo cmq verificare che esista davvero su drive, potrebbe essere stato cancellato o peggio ancora nel cestino...
     const exist = await checkIfIdSheetExistonGoogle(auth, spreadsheetId);
+    console.log("_____ create_spreadsheets exist on Google ?: _____"+exist);
       
       if(!exist){
 
          // se non lo trovo allora creo il nuovo file
          spreadsheetId = await create(auth, docTitle);
+         console.log("_____ create_spreadsheets non esiste in google allora lo creo e questo è il suo ID: _____"+spreadsheetId);
+
          // e devo camncellarlo dal DB !!!
 
       }
@@ -769,8 +774,10 @@ app.post("/create_spreadsheets", async (request, response) => {
    
          // creo array da scivere
          const array = await makeArray(data._doc);
+         console.log("_____ create_spreadsheets ho creato array da scrivere: _____");
          // e poi scrivo
          const update = await updateValues(spreadsheetId, valueInputOption, array, auth);
+         console.log("_____ create_spreadsheets.... creato !!!: _____");
 
   
   //  const spreadsheetId  = "1LF87ZFUi_6aYmh9RAqNdCMm5KoeKWedvQ7oBASrzVIQ";
