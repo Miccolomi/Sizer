@@ -133,14 +133,14 @@ useEffect(() => {
    
     <div className="text-center">
        <br/><br/>
-    <h1>Create new Customer Sizer</h1>
+    <h1>Create new Customer Project</h1>
     <br/><br/>
 
     <Form noValidate validated={validated}  onSubmit={(e)=>handleSubmit(e)}>
 
     <Container fluid="md">
       <Row>
-      <Col  xs={5}>
+        <Col  xs={5}>
             <Form.Label>Customer</Form.Label>
             <Form.Control required size="sm" type="text" placeholder="Customer" name="customer" value={customer} onChange={(e) => setCustomer(e.target.value)}/>
             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
@@ -153,11 +153,11 @@ useEffect(() => {
             <Form.Control.Feedback type="invalid">Please insert Project Name </Form.Control.Feedback>
         </Col>
         <Col xs={4}>
-        <Form.Label>Customer Email</Form.Label>
-        <Form.Control  required size="sm" type="email" placeholder="Customer Email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-        <Form.Control.Feedback type="invalid">Please insert valid Email </Form.Control.Feedback>
-    </Col>
+            <Form.Label>Customer Email</Form.Label>
+            <Form.Control  required size="sm" type="email" placeholder="Customer Email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+            <Form.Control.Feedback type="invalid">Please insert valid Email </Form.Control.Feedback>
+      </Col>
       </Row>
       <br/><br/>
       <Row>
@@ -235,7 +235,7 @@ useEffect(() => {
     <Row>
 
     <Col>
-      <Form.Text className="text-muted">  If you save email notification are sent to customer  </Form.Text>
+      <Form.Text className="text-muted">  If you save, email notification are sent to Customer  </Form.Text>
       </Col>
       <Col>
       <Form.Text className="text-muted"> </Form.Text>

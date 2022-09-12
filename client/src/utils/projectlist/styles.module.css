@@ -131,3 +131,20 @@
 	color: white;
 	margin: 10px;
 }
+
+.purple_btn {
+	border: none;
+	outline: none;
+	padding: 12px 0;
+	background-color: white;
+	border-radius: 20px;
+	width: 50px;
+	font-weight: bold;
+	font-size: 14px;
+	cursor: pointer;
+}
+.purple_btn {
+	background-color: #c81fcb;
+	color: white;
+	margin: 10px;
+}

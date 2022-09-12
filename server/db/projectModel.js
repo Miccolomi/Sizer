@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+var validator = require('validator');
 
 const ProjectSchema = new mongoose.Schema(
 {
@@ -24,8 +25,13 @@ const ProjectSchema = new mongoose.Schema(
   },
   email: {
     type: String,
-    required: [true, "Email required"]
-},
+    required: [true, "Please provide valide Customer Email!"],
+    unique: true,
+    lowercase: true,
+    validate: (value) => {
+      return validator.isEmail(value)
+    }
+  },
   user_logon: {
         type: String,
         required: [true, "Error, user logon not found"],
@@ -51,7 +57,7 @@ const ProjectSchema = new mongoose.Schema(
       },  
 
 
-        // document section
+        // DATA section
         documents:{
           type: Number
         },  
@@ -65,10 +71,16 @@ const ProjectSchema = new mongoose.Schema(
           type: String
         },  
         average_fields_documents:{
-          type: Number
+          type: "String",
+          mongodb: {
+            "dataType": "Decimal128",
+           }
         },  
         average_sizing_documents :{
-          type: Number
+          type: "String",
+          mongodb: {
+            "dataType": "Decimal128",
+           }
         },
         document_retention:{
           type: Number
@@ -80,17 +92,21 @@ const ProjectSchema = new mongoose.Schema(
           type: String
         },  
         working_set  :{
-          type: String
+          type: "String",
+          mongodb: {
+            "dataType": "Decimal128",
+           }
         },  
-         // document section
+
+         // CRUD
          total_insert  :{
-          type: String
+          type: Number
         },  
          total_update  :{
-          type: String
+          type: Number
         },  
          total_query  :{
-          type: String
+          type: Number
         },  
         insert_per   :{
           type: String
@@ -102,18 +118,23 @@ const ProjectSchema = new mongoose.Schema(
           type: String
         },  
         concurrent_write  :{
-          type: String
+          type: Number
         },
         concurrent_write_details :{
           type: String
         },    
         concurrent_read :{
-          type: String
+          type: Number
         },  
         concurrent_read_details  :{
           type: String 
         },  
          // fine crud
+         // google sheet
+         spreadsheetId  :{
+          type: String 
+        },  
+         // fine google sheet
 
 
 

@@ -1,13 +1,17 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
-const bcryptSalt = process.env.BCRYPT_SALT;
+let validator = require('validator')
+
 
 const UserSchema = new mongoose.Schema(
   {
     email: {
         type: String,
         required: [true, "Please provide an Email!"],
-        unique: true,
+        unique: false, // attenzione questo potrebbe creare problemi !!!!
+        lowercase: true,
+        validate: (value) => {
+          return validator.isEmail(value)
+        }
       },
     
       password: {

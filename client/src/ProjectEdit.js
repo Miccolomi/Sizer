@@ -458,7 +458,7 @@ async function onSubmit(e) {
  
       <Form.Group className="mb-3" controlId="contesto">
         <Form.Label>Description:</Form.Label>
-        <Form.Control type="text"  value={form.contesto || ''} disabled readOnly/>
+        <Form.Control  as="textarea"   value={form.contesto || ''} disabled readOnly/>
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="usecase">
@@ -480,65 +480,141 @@ async function onSubmit(e) {
       
       </Tab>
 
-      <Tab eventKey="Data" title="Data">
+      <Tab eventKey="Data" title="Data" >
        
-
+      <Row>
+      <Col  xs={3}>
                   <Form.Group className="mb-3" controlId="initial_data">
                     <Form.Label>Initial data or data to import:</Form.Label>
                     <Form.Control type="text"  value={form.initial_data  || ''} onChange={(e) => updateForm({ initial_data: e.target.value })}/>
                   </Form.Group>   
-                  
+      </Col>
+      <Col xs={6}>  
+                <Form.Text className="text-muted">Info: </Form.Text>
+                <br/>
+                <Form.Text className="text-muted">Insert number of documents that you want to import when project start  </Form.Text>
+      </Col>
+  </Row>          
+  <Row>
+      <Col  xs={3}>
                   <Form.Group className="mb-3" controlId="documents">
                     <Form.Label>Total Number of NEW Documents:</Form.Label>
                     <Form.Control type="text"  value={form.documents  || ''} onChange={(e) => updateForm({ documents: e.target.value })}/>
-                  </Form.Group>  
-
+                  </Form.Group>              
+      </Col> 
+      <Col xs={6}>  
+                <Form.Text className="text-muted">Info: </Form.Text>
+                <br/>
+                <Form.Text className="text-muted">Insert number of New documents  </Form.Text>
+      </Col>
+  </Row>
+  <Row>
+      <Col  xs={3}>         
                   <Form.Label>Indication of growth:</Form.Label>
                   <InputGroup className="mb-3">
                     <Form.Control type="text"  value={form.growth  || ''} onChange={(e) => updateForm({ growth: e.target.value })}/>
                     <InputGroup.Text>%</InputGroup.Text>
                   </InputGroup> 
-
-
-                  <Form.Label>Growth Details:</Form.Label>
+                  </Col> 
+      <Col xs={3}>  
+                <Form.Text className="text-muted">Info: </Form.Text>
+                <br/>
+                <Form.Text className="text-muted">Percentual documents growth:  </Form.Text>
+      </Col>
+      <Col xs={4}>  
+      <Form.Label>Growth Details:</Form.Label>
                   <Form.Group  controlId="growthspec"> 
                       <Form.Check  type="radio" inline label="Day"  value={'day'}      checked={form.growthspec === "day" }    name="growthspec"  onChange={(e) => updateForm({ growthspec: e.target.value })} />
                       <Form.Check  type="radio" inline label="Monthly"  value={'monthly'} checked={form.growthspec === "monthly"} name="growthspec"  onChange={(e) => updateForm({ growthspec: e.target.value })}/>
                       <Form.Check  type="radio" inline label="Year"    value={'year'}    checked={form.growthspec === "year" }   name="growthspec"  onChange={(e) => updateForm({ growthspec: e.target.value })} />
                   </Form.Group>
-
-
+      </Col>
+  </Row>
+  <Row>
+      <Col  xs={3}>
                   <Form.Group className="mb-3" controlId="average_fields_documents">
                     <Form.Label>Average Number of Fields per documents:</Form.Label>
                     <Form.Control type="text"  value={form.average_fields_documents  || ''} onChange={(e) => updateForm({ average_fields_documents: e.target.value })}/>
                   </Form.Group>   
-
+       </Col> 
+      <Col xs={6}>  
+                <Form.Text className="text-muted">Info: </Form.Text>
+                <br/>
+                <Form.Text className="text-muted">How many fields contain each document  </Form.Text>
+      </Col>
+  </Row>
+  <Row>
+      <Col  xs={3}>
                   <Form.Group className="mb-3" controlId="index_size"> 
                     <Form.Label>Number of Index per document:</Form.Label>
                     <Form.Control type="text"  value={form.index_size  || ''} onChange={(e) => updateForm({ index_size: e.target.value })}/>
                   </Form.Group> 
+        </Col> 
+      <Col xs={6}>  
+                <Form.Text className="text-muted">Info: </Form.Text>
+                <br/>
+                <Form.Text className="text-muted">How many index have the document </Form.Text>
+      </Col>
+  </Row>
+  <Row>
+      <Col  xs={3}>
+                 <Form.Label className="text-primary">Number of documents in working set:</Form.Label>
+                 <Form.Group className="mb-3" controlId="working_set">
+                   <InputGroup className="mb-3">
+                     <Form.Control type="text" value={form.working_set || ''} onChange={(e) => updateForm({ working_set: e.target.value })} />
+                     <InputGroup.Text>%</InputGroup.Text>
+                   </InputGroup>
+                 </Form.Group> 
+        </Col> 
+      <Col xs={7}>  
+                <Form.Text className="text-primary">Info: </Form.Text>
+                <br/>
+                <Form.Text className="text-muted">“Working set” is basically the amount of data and indexes that will be active/in use by your system at any given time. </Form.Text>
+                <Form.Text className="text-muted">The key point is to ask yourself: do I have enough RAM for my working set? If the answer is: “I don’t know”, then get yourself to the position of knowing.</Form.Text>
+      </Col>
+  </Row>
+             <Row>
+               <Col xs={3}>
+                 <Form.Label>Average Sizing of single document:</Form.Label>
+                 <Form.Group className="mb-3" controlId="average_sizing_documents">
+                   <InputGroup className="mb-3">
 
-                  <Form.Group className="mb-3" controlId="working_set">
-                    <Form.Label>Number of documents in working set:</Form.Label>
-                    <Form.Control type="text"  value={form.working_set  || ''} onChange={(e) => updateForm({ working_set: e.target.value })}/>
-                  </Form.Group> 
-
-                  <Form.Group className="mb-3" controlId="average_sizing_documents">
-                    <Form.Label>Average Sizing of single document:</Form.Label>
-                    <Form.Control type="text"  value={form.average_sizing_documents  || ''} onChange={(e) => updateForm({ average_sizing_documents: e.target.value })}/>
-                  </Form.Group> 
-
+                     <Form.Control type="text" value={form.average_sizing_documents || ''} onChange={(e) => updateForm({ average_sizing_documents: e.target.value })} />
+                     <InputGroup.Text>KiloByte</InputGroup.Text>
+                   </InputGroup>
+                 </Form.Group>
+               </Col>
+               <Col xs={6}>
+                 <Form.Text className="text-muted">Info: </Form.Text>
+                 <br />
+                 <Form.Text className="text-muted">Haverage Sizie of document in KB </Form.Text>
+               </Col>
+             </Row>
+             
+             <Row>
+               <Col xs={3}>
                   <Form.Label>Document Retention:</Form.Label>
                   <InputGroup className="mb-3">
                     <Form.Control type="text"  value={form.document_retention  || ''} onChange={(e) => updateForm({ document_retention: e.target.value })}/>
                   </InputGroup> 
-
-                  <Form.Label>Document Retention Period:</Form.Label>
+              </Col>
+              <Col xs={3}>
+                 <Form.Text className="text-muted">Info: </Form.Text>
+                 <br />
+                 <Form.Text className="text-muted">delete or move documents at a specific time </Form.Text>
+               </Col>
+               <Col xs={4}>
+               <Form.Label>Document Retention Period:</Form.Label>
                   <Form.Group  controlId="document_retention_period"> 
                       <Form.Check  type="radio" inline label="Day"     value={'day'}      checked={form.document_retention_period === "day" }    name="document_retention_period"  onChange={(e) => updateForm({ document_retention_period: e.target.value })} />
-                      <Form.Check  type="radio" inline label="Month" value={'month'}  checked={form.document_retention_period === "month"} name="document_retention_period"  onChange={(e) => updateForm({ document_retention_period: e.target.value })}/>
+                      <Form.Check  type="radio" inline label="Month"   value={'month'}    checked={form.document_retention_period === "month"}   name="document_retention_period"  onChange={(e) => updateForm({ document_retention_period: e.target.value })}/>
                       <Form.Check  type="radio" inline label="Year"    value={'year'}     checked={form.document_retention_period === "year" }   name="document_retention_period"  onChange={(e) => updateForm({ document_retention_period: e.target.value })} />
                   </Form.Group>
+               </Col>
+
+             </Row>
+
+                 
 
                  
 

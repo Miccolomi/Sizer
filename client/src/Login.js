@@ -40,17 +40,18 @@ export default function Login() {
                         //  setMessage("You Are Logged in Successfully !");
 
 						if (resp.data.type =="INT"){
-							console.log("resp.data.type"+ resp.data.type);        
+						//	console.log("resp.data.type"+ resp.data.type);        
 
-                            // redirect MONGODB user to the auth page
-                          window.location.href = "/auth";
+                            // redirect MONGODB user
+						  window.location.href="/project_list_int";
 						}
-						else{  // or redirect customer to form
+						else{  // or redirect CUSTOMER user
 
-							console.log("resp.data.type"+ resp.data.type);  
-							console.log("resp.data.type"+ resp.data.project);  
+						//	console.log("resp.data.type"+ resp.data.type);  
+						//	console.log("resp.data.type"+ resp.data.project);  
 
-							window.location.href="/project_edit/"+resp.data.project;
+						//	window.location.href="/project_edit/"+resp.data.project;
+						window.location.href="/project_list_ext";
 							
 						}
 						 
@@ -59,7 +60,7 @@ export default function Login() {
 
                     }).catch(function (error) {
                       console.log(error.response.status +" "+ error.response.data.message);                 
-                      setMessage(error.response.data.message );         
+                      setMessage(error.response.data.message );          
                     });
 
   } // fine handleSubmit 
@@ -98,7 +99,7 @@ export default function Login() {
 		  <button type="submit"  className={styles.blu_btn}   onClick={(e) => {e.preventDefault();  window.location.href='/ResetPasswordRequest';}} >Change Password</button>
 				</div>
 				<div className={styles.right}>
-					<h6 text>MongoDB SA or AE?</h6>
+					<h6>MongoDB SA ?</h6>
 					<Link to="/register"> 
 						<button type="button" className={styles.white_btn}>
 							Sign Up

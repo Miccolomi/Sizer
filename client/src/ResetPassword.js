@@ -52,10 +52,13 @@ export default function ResetPassword() {
         
         setMessage("Done ! Password change !");
 
-       
+         
 
-          // redirect user to the auth page
-          window.location.href = "/auth";
+          window.location.href = "/";
+      
+    
+
+       
            
       })
       .catch((error) => {
