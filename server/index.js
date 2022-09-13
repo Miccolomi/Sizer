@@ -734,8 +734,10 @@ app.post("/create_spreadsheets", async (request, response) => {
   const TOKEN_PATH = path.join(process.cwd(), 'token.json');
   const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials_google_sheet.json');
 
+  var URL_FILE="";
 
-  //  authorize().then(create).catch(console.error);
+
+//  authorize().then(create).catch(console.error);
 
 
   const CreaExcel = async () => {
@@ -778,13 +780,15 @@ app.post("/create_spreadsheets", async (request, response) => {
          // e poi scrivo
          const update = await updateValues(spreadsheetId, valueInputOption, array, auth);
          console.log("_____ create_spreadsheets.... creato !!!: _____");
+         console.log('%d cells updated.', update.data.updatedCells);
+         console.log('URL: ', update.config.url + URL_FILE);
+         return response.status(200).send({ message: "Google Sheet create Successfully with ", info_cell: update.data.updatedCells+ " updated cells. " ,  url: "Link to Google Sheet: "+ URL_FILE });
+
 
   
   //  const spreadsheetId  = "1LF87ZFUi_6aYmh9RAqNdCMm5KoeKWedvQ7oBASrzVIQ";
     
    
-   
-   // return update;
   }
   
   // Make 
@@ -818,7 +822,8 @@ app.post("/create_spreadsheets", async (request, response) => {
     
         
         if (response){
-          console.log(JSON.stringify(response, null, 2));
+          console.log(JSON.stringify(response, null, 2)); // questa info deve tornare indietro !!!! bello !!!
+          URL_FILE = response.spreadsheetUrl; // mi segno l'url del file da ritornare
           return true;
         } 
         else{
@@ -827,6 +832,9 @@ app.post("/create_spreadsheets", async (request, response) => {
 
     } catch (err) {
       console.log(err.message);
+      if (err.code == "ETIMEDOUT"){
+        return response.status(400).send( "TimeOut Error :" +  err.message );
+      }
       return false; // vuol dire che non esiste !!!
     }
   

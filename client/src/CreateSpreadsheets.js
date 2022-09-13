@@ -22,11 +22,13 @@ export default  function CreateSpreadsheets() {
     const params = useParams(); 
     const [message, setMessage] = useState(null);
     const [message1, setMessage1] = useState(null);
+    const [message2, setMessage2] = useState(null);
+    const [message_error, setMessageError] = useState(null);
     const id = params.id.toString();
     const navigate = useNavigate();
     
     const handleClick = () => {
-        navigate('/project_list', {replace: true});
+        navigate('/project_list_int', {replace: true});
       };
 
 
@@ -55,7 +57,7 @@ export default  function CreateSpreadsheets() {
     
             if (result.data.spreadsheetId){
                  setMessage("This is you existing google sheet ID: " + result.data.spreadsheetId );
-                 setMessage1("Mean that your file already exist. Google is not going to check if this file has been trashed or not, or what directory it resides in, if you not found the sheet, please check if its been trashed");
+                 setMessage1("Mean that your file already exist and will be overwrite. Google is not going to check if this file has been trashed or not, or what directory it resides in, if you not found the sheet in Google Drive, please check if its been trashed");
               }
             else {
                 setMessage("This is the first time that you create Sizer on Google Sheet.");
@@ -65,6 +67,8 @@ export default  function CreateSpreadsheets() {
      
           .catch(function (error){
            console.log("SONO IN CreateSpreadsheets e ho un errore: " + error);
+
+           setMessageError(error.message);
     
                                 if(401 == error.response.status) {
                                     window.location.href = "/";
@@ -94,7 +98,9 @@ export default  function CreateSpreadsheets() {
       axios(configuration_create)
       .then((result) => {
  
-       console.log("SONO IN makeSizer - sono in result - risultato: "+ result); 
+       console.log("SONO IN makeSizer - sono in result - risultato: "+ result.data); 
+
+           setMessage2(result.data.message + " " + result.data.info_cell + " - "+ result.data.url );
 
       // setMessage(result.data);
 
@@ -112,45 +118,58 @@ export default  function CreateSpreadsheets() {
 
         } // fine onSubmit
 
-         return (<>
+    return (<>
 
-            <div>
-                <h3>Make your Size</h3>
-              
-               
-                
-            </div>
+        <div>
+            <h3>Make your Size</h3>
 
-            <Alert key="primary" variant="primary">
-                                <p> {message} </p>
-                                <hr />
-                                 <p className="mb-0">
-                                 {message1}
-                                </p>
-                              </Alert>
+
+
+        </div>
+
+        <Alert key="primary" variant="primary">
+            <p> {message} </p>
+            <hr />
+            <p className="mb-0">
+                {message1}
+            </p>
+        </Alert>
+
+
+        <div>
+            <Form onSubmit={onSubmit}>
+
+
+                <Row>
+                    <Col>
+                        <button type="submit" className={styles.green_btn}>Make</button>
+                    </Col>
+                    <Col>
+                        <button type="submit" className={styles.green_btn} onClick={handleClick}>Back</button>
+                    </Col>
+                </Row>
+
+            </Form>
+
+        </div>
+        <div>
+            <br/>
+
+            {message2 &&  <Alert key="success" variant="success">
+                <p> {message2} </p>
+                <hr />
+                <p className="mb-0">
+                </p>
+            </Alert>}
+
            
-      
-                 <div>
-                 <Form onSubmit={onSubmit}>
+        </div>
+
+        {message_error && <div className={styles.error_msg}>{message_error}</div>}
 
 
-                        <Row>
-                            <Col>
-                                <button type="submit" className={styles.green_btn}>Make</button>
-                            </Col>
-                            <Col>
-                                <button type="submit" className={styles.green_btn} onClick={handleClick}>Back</button>                              
-                            </Col>
-                        </Row>  
 
-                 </Form>   
-                 
-                           
-
-                           
-              </div>
-      
-              </>);
+    </>);
               
 
 
