@@ -256,9 +256,6 @@ app.post("/info_mongo", auth, async (request, response) => {
   // DEVO CONTRLLA RE LA MAIL DEL CLIENTE SE ESISTE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! altrimenti non entra se ha 2 progettoi assegnati alla stessa persona!!!!!!!!!
   const userexist = await User.findOne({ "email": email }); //Salvo il cliente sole se non esiste !!! altrimenti non lo salvo !!!!
 
-  
-
-
   // save the new user
   await new_project.save().then((result) => {
 
@@ -309,7 +306,9 @@ app.post("/info_mongo", auth, async (request, response) => {
 
     console.log("______EMAIL A NUOVO UTENTE INVIATA_____");
 
-    response.status(201).send({ message: "Project Created Successfully and Email send to customer !", result, });
+
+    response.status(201).send({ message: "Project Created Successfully and Email send to customer !", result});
+
     }
     else{ // quindi cliente è gia registrato e non lo devo salvare 2 volte..
 
@@ -326,7 +325,7 @@ app.post("/info_mongo", auth, async (request, response) => {
   
       console.log("______EMAIL A UTENTE --ESISTENTE-- INVIATA_____");
   
-      response.status(201).send({ message: "Project Created Successfully and Email send to customer !", result, });
+      response.status(201).send({ message: "Project Created Successfully and Email send to customer !", result });
 
     }
 
@@ -348,16 +347,16 @@ app.post("/info_mongo", auth, async (request, response) => {
 // PROJECT LIST INTERNO endpoint
 app.post("/project_list_int", auth, async (request, response) => {
 
-  console.log("______sono in APP PROJECT LIST QUERY_____");
+  console.log("______sono in APP PROJECT LIST INT QUERY_____");
   // prendo utente loggato
 
   const user_logon = request.query.user;
   console.log("user_logon che è arrivato da web: " + user_logon);
 
 
-  //Chi mi sta chiamando interno o esterno ?
-  const query_mongo = { user_logon: user_logon }; // questo nel caso io sia un SA mongodb
- 
+  //Chi mi sta chiamando interno
+  const query_mongo = { user_logon: user_logon }; 
+  
   let list = null;
   //const options = {
   // sort returned documents in ascending order by title (A->Z)
@@ -369,23 +368,11 @@ app.post("/project_list_int", auth, async (request, response) => {
   try {
      list = await Project.find(query_mongo);
 
-    if (list.length>0) {
-
-      console.log("______ PROJECT LIST__ MI HA CHIAMATO UN SA ____ fatta query, ottengo questo_____: " + list);
+      console.log("______ PROJECT LIST INT fatta query, ottengo questo_____: " + list);
       return response.status(201).json(list);
-   // return response.status(201).send( JSON.stringify(list) ); // per capire chi è utente lo faccio tramite lo status code !!!!!!!!
+   // return response.status(201).send( JSON.stringify(list) );
    
-    
-    }
-    else{
-    
-     return response.status(200).json("no data found");
   
-
-    }
-
-   
-
   }
   catch (error) {
     console.log('_______SONO IN PROJECT EDIT ERRROR__________', error);

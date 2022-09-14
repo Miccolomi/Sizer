@@ -14,6 +14,10 @@ export default function Register()
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState(null);
+
+	
+
+
            // set configurations
     const configuration = 
     {
@@ -28,6 +32,14 @@ export default function Register()
     const handleSubmit = (e) => {
             
       e.preventDefault();
+
+	    // controllo supplementare per la mail
+	if (email.indexOf('@') > -1)
+	{
+		return setMessage("Only name.surname are valid input for username");
+	}
+
+	
     
     // make the API call
     axios(configuration)

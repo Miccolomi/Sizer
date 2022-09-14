@@ -112,7 +112,7 @@ export default class TodosList extends Component {
        axios(configuration)
             .then(response => {
 
-                if(response.data){   // dovrei controllare la lunghezza tramite lenhgt di response e restuire il fatto che non ci sono record...
+                if(response.data){   
 
                 this.setState({ todos: response.data });
            
@@ -139,32 +139,37 @@ export default class TodosList extends Component {
     render() {
 
         return (
-            <div>
-                <h3>Your Project List</h3>
-                <table className="table table-striped" style={{ marginTop: 20 }} >
-                    <thead  align="center">
-                        <tr>
-                            <th>Customer</th>
-                            <th>Project</th>
-                            <th>Use Case</th>
-                            <th>Architecture</th>
-                            <th>Customer Email</th> 
-                            <th>Edit</th>
-                            <th>Delete</th>
-                            <th>Make Sizer</th>
-                        </tr>
-                    </thead>
-                    <tbody align="center">
-                        { this.todoList() }
-                    </tbody>
-                </table>
-                <div align="left">
-                         <button type="submit"  className={styles.blu_btn}   onClick={(e) => {e.preventDefault();  window.location.assign('/auth'); }} >New Project</button>
-                 </div>
-                <div align="right">
-                     
-                </div>
-            </div>
+
+           
+                            <div>
+                                <h3>Your Project List</h3>
+                                <table className="table table-striped" style={{ marginTop: 20 }} >
+                                    <thead  align="center">
+                                        <tr>
+                                            <th>Customer</th>
+                                            <th>Project</th>
+                                            <th>Use Case</th>
+                                            <th>Architecture</th>
+                                            <th>Customer Email</th> 
+                                            <th>Edit</th>
+                                            <th>Delete</th>
+                                            <th>Make Sizer</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody align="center">
+                            
+                                {this.todoList ? (this.todoList()) :    (<tr >  <th colspan="8">  <div className={styles.error_msg}>No data found, create your first Project</div>  </th></tr>) } 
+                                    </tbody>
+                                </table>
+
+                                <div align="left">
+                                        <button type="submit"  className={styles.blu_btn}   onClick={(e) => {e.preventDefault();  window.location.assign('/auth'); }} >New Project</button>
+                                </div>
+                                <div align="right">
+                                    
+                                </div>
+                            </div>
+                   
 
         ) // fine return
     } // fine render

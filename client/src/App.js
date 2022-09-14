@@ -36,18 +36,14 @@ function App() {
         <Route  path="/register" element={<Register/>} />
         <Route  path="/free" element={<FreeComponent/>} />
         <Route  path="/auth"  element={<NewProject/>} />
-
         <Route  path="/project_list_int"  element={<ProjectListInt/>} />
         <Route  path="/project_list_ext"  element={<ProjectListExt/>} />
-
         <Route  path="/project_edit/:id"  element={<ProjectEdit/>} />
         <Route  path="/project_update"  element={<ProjectEdit/>} />
         <Route  path="/project_delete/:id"  element={<ProjectListInt/>} />
         <Route  path="/resetPasswordRequest"  element={<ResetPasswordRequest/>} />
         <Route  path="/resetPassword"  element={<ResetPassword/>}  exact /> 
-        
         <Route  path="/create_spreadsheets/:id"  element={<CreateSpreadsheets/>} /> 
-     
         <Route  path="*" element= {<main style={{ padding: "1rem" }}> <p>There's nothing here!</p> </main>} />  
      
       </Routes>

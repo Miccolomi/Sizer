@@ -12,10 +12,14 @@ import Form from 'react-bootstrap/Form';
 
 import styles from "./utils/newproject/styles.module.css";
 
+import LoadingSpinner from "./LoadingSpinner";
+
 
 
 
 export default  function CreateSpreadsheets() {
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const cookies = new Cookies();
     const token = cookies.get("TOKEN");
@@ -38,6 +42,8 @@ export default  function CreateSpreadsheets() {
     // provo a prendere info inziali
 
     useEffect(() => {
+
+    
 
         const configuration_data = {
             method: "POST",
@@ -85,6 +91,8 @@ export default  function CreateSpreadsheets() {
 
         e.preventDefault();
 
+        setIsLoading(true);
+
 
     const configuration_create = {
         method: "POST",
@@ -97,10 +105,13 @@ export default  function CreateSpreadsheets() {
 
       axios(configuration_create)
       .then((result) => {
+
  
        console.log("SONO IN makeSizer - sono in result - risultato: "+ result.data); 
 
            setMessage2(result.data.message + " " + result.data.info_cell + " - "+ result.data.url );
+
+           setIsLoading(false);   // Hide loading screen 
 
       // setMessage(result.data);
 
@@ -108,6 +119,8 @@ export default  function CreateSpreadsheets() {
  
       .catch(function (error){
        console.log("SONO IN makeSizer e ho un errore: " + error.message);
+
+       setIsLoading(false);   // Hide loading screen 
 
                             if(401 == error.response.status) {
                                 window.location.href = "/";
@@ -121,6 +134,7 @@ export default  function CreateSpreadsheets() {
     return (<>
 
         <div>
+      
             <h3>Make your Size</h3>
 
 
@@ -141,32 +155,35 @@ export default  function CreateSpreadsheets() {
 
 
                 <Row>
-                    <Col>
-                        <button type="submit" className={styles.green_btn}>Make</button>
+                    <Col align="left">
+                        <button type="submit" className={styles.green_btn} >Make</button>
                     </Col>
-                    <Col>
-                        <button type="submit" className={styles.green_btn} onClick={handleClick}>Back</button>
+                    <Col align="right">
+                        <button type="submit" className={styles.blu_btn} onClick={handleClick} >Back</button>
                     </Col>
                 </Row>
 
             </Form>
 
         </div>
-        <div>
-            <br/>
 
-            {message2 &&  <Alert key="success" variant="success">
-                <p> {message2} </p>
-                <hr />
-                <p className="mb-0">
-                </p>
-            </Alert>}
+       
 
-           
-        </div>
+                    <div align="center">
+                        <br/>
+                        {isLoading ? <LoadingSpinner /> : false}
 
-        {message_error && <div className={styles.error_msg}>{message_error}</div>}
+                        {message2 &&  <Alert key="success" variant="success">
+                            <p> {message2} </p>
+                            <hr />
+                            <p className="mb-0">
+                            </p>
+                        </Alert>}
+                    
+                    </div>
 
+                    {message_error && <div className={styles.error_msg}>{message_error}</div>}
+               
 
 
     </>);

@@ -84,7 +84,7 @@ useEffect(() => {
         usecase,
         email,
         user_logon,
-        projectarchitecture,
+        projectarchitecture
        
       },
     };
@@ -101,7 +101,7 @@ useEffect(() => {
        setMessage(result.data);
     
          // redirect user to the Project List
-         window.location.href = '/project_list';
+         window.location.href = '/project_list_int';
 
       })
       .catch((error) => {
