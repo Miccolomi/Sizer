@@ -404,27 +404,12 @@ async function onSubmit(e) {
                       window.location.href = "/";
                    }
 
-                    if (error.response) {
-
-                      console.error("SONO IN ERRORE !!!!!!!!!!!!!!!");
+                      console.error("SONO IN ERRORE !!!!!!!!!!!!!!!"+ error.message);
                      
-                      setErrore(error.response.data );               
+                      setErrore(error.message );               
 
-                    }
-                    else if (error.request) {
-
-                      setMessage("Error: " + JSON.stringify(error.request.data.message) );
-                      console.log(JSON.stringify(error.request.data.message));
-
-                    }
-                    else {
-                      // Something happened in setting up the request that triggered an Error
-                      
-                      setMessage("Error: " + JSON.stringify(error.data.message) );
-                      console.log(JSON.stringify(error.data.message));
-
-                      error = new Error();
-                    }
+                   
+                   
                   }); // fine catch              
               
               } // fine handleSubmit
@@ -701,7 +686,7 @@ async function onSubmit(e) {
 
        </Col>
        <Col>
-       {message && <h6>{message}</h6>}
+       {message && <h6>{message}</h6>}  {errore && <h6>{errore}</h6>}
        </Col>
        <Col>
       <button type="submit" className={styles.red_btn}   variant="danger" onClick={() => logout()}>Logout</button>

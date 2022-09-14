@@ -458,11 +458,71 @@ app.get("/project_edit", auth, async (request, response) => {
 
 });
 
+
+
+
 // This section will help you update a record by id.
-app.put("/project_update", auth, (request, response) => {
+app.put("/project_update", auth, async (request, response) => {
 
 
   console.log("______SONO IN APP PROJECT UPDATE e ho ricevuto questo ID_____" + request.query.id);
+
+
+   try {
+
+     // create a filter 
+     const filter =  {"_id": ObjectId(request.query.id)};
+
+
+    // create a document that sets new value
+    const updateDoc = {
+      $set: {
+
+        PRSite : request.query.PRSite,
+        DRSite : request.query.DRSite,
+        PRStorage : request.query.PRStorage,
+        Atlas : request.query.Atlas,
+        Architecture : request.query.Architecture,
+    
+        // document
+        documents : request.query.documents,
+        initial_data : request.query.initial_data,
+        growth : request.query.growth,
+        growthspec : request.query.growthspec,
+        document_retention : request.query.document_retention,
+        document_retention_period : request.query.document_retention_period,
+    
+        average_fields_documents : request.query.average_fields_documents,
+        average_sizing_documents : request.query.average_sizing_documents,
+    
+        index_size : request.query.index_size,
+        working_set : request.query.working_set,
+    
+        // CRUD
+        total_insert : request.query.total_insert,
+        total_update : request.query.total_update,
+        total_query : request.query.total_query,
+        insert_per : request.query.insert_per,
+        update_per : request.query.update_per,
+        query_per : request.query.query_per,
+        concurrent_write : request.query.concurrent_write,
+        concurrent_write_details : request.query.concurrent_write_details,
+        concurrent_read : request.query.concurrent_read,
+        concurrent_read_details : request.query.concurrent_read_details
+      },
+    };
+
+    const result = await Project.updateOne(filter, updateDoc);
+    console.log(
+      `${result.matchedCount} document(s) matched the filter, updated ${result.modifiedCount} document(s)`,
+    );
+   // response.json('Project updated!');
+   response.json(`Success updated ${result.modifiedCount} document`);
+
+  } catch (err) {
+    console.error(err.message);
+    response.status(404).send("data is not found");
+  }
 
   /* DEBUG
         console.log("______sono in APP  PROJECT UPDATE PRSite = _____" + request.query.PRSite);
@@ -472,59 +532,6 @@ app.put("/project_update", auth, (request, response) => {
         console.log("______sono in APP  PROJECT UPDATE document_retention = _____" + request.query.document_retention);
         console.log("______sono in APP  PROJECT UPDATE document_retention_period = _____" + request.query.document_retention_period);
      */
-
-
-  Project.findById(request.query.id, function (error, project) {
-
-    if (!project)
-      response.status(404).send("data is not found");
-    else
-
-    project.PRSite = request.query.PRSite;
-    project.DRSite = request.query.DRSite;
-    project.PRStorage = request.query.PRStorage;
-    project.Atlas = request.query.Atlas;
-    project.Architecture = request.query.Architecture;
-
-    // document
-    project.documents = request.query.documents;
-    project.initial_data = request.query.initial_data;
-    project.growth = request.query.growth;
-    project.growthspec = request.query.growthspec;
-    project.document_retention = request.query.document_retention;
-    project.document_retention_period = request.query.document_retention_period;
-
-    project.average_fields_documents = request.query.average_fields_documents;
-    project.average_sizing_documents = request.query.average_sizing_documents;
-
-    project.index_size = request.query.index_size;
-    project.working_set = request.query.working_set;
-
-    // CRUD
-    project.total_insert = request.query.total_insert;
-    project.total_update = request.query.total_update;
-    project.total_query = request.query.total_query;
-    project.insert_per = request.query.insert_per;
-    project.update_per = request.query.update_per;
-    project.query_per = request.query.query_per;
-    project.concurrent_write = request.query.concurrent_write;
-    project.concurrent_write_details = request.query.concurrent_write_details;
-    project.concurrent_read = request.query.concurrent_read;
-    project.concurrent_read_details = request.query.concurrent_read_details;
-
-
-    project.save().then(project => {
-      response.json('Project updated!');
-    //  return response.status(200).json('Project updated!');
-     
-    })
-      .catch(err => {
-        response.status(400).json("Update not possible");
-
-      });
-  });
-
-
 
 
 });
