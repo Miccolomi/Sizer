@@ -56,7 +56,7 @@ const Todo = props => (
               console.log("SONO IN DELETE- sono in result - record cancellati: " + JSON.stringify(result.data.deletedCount)) ;
 
                // redirect user to the auth page
-               window.location.href = "/project_list";
+               window.location.href = "/project_list_int";
         
              })
         

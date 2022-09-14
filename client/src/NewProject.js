@@ -223,7 +223,7 @@ useEffect(() => {
      
 
       <Col>
-      <button type="submit"  className={styles.blu_btn}   onClick={(e) => {  window.location.assign('/project_list');}} >Project List</button>
+      <button type="submit"  className={styles.blu_btn}   onClick={(e) => {  window.location.assign('/project_list_int');}} >Project List</button>
       </Col>
 
       <Col>
