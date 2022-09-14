@@ -475,11 +475,12 @@ app.put("/project_update", auth, (request, response) => {
 
 
   Project.findById(request.query.id, function (error, project) {
+
     if (!project)
       response.status(404).send("data is not found");
     else
 
-      project.PRSite = request.query.PRSite;
+    project.PRSite = request.query.PRSite;
     project.DRSite = request.query.DRSite;
     project.PRStorage = request.query.PRStorage;
     project.Atlas = request.query.Atlas;
@@ -514,7 +515,8 @@ app.put("/project_update", auth, (request, response) => {
 
     project.save().then(project => {
       response.json('Project updated!');
-      // response.status(200).json({msg : "Project updated!"});
+    //  return response.status(200).json('Project updated!');
+     
     })
       .catch(err => {
         response.status(400).json("Update not possible");
@@ -695,7 +697,6 @@ app.post("/_getData", async (request, response)=> {
 
 })// end
 //FINE UTILI
-
 
 
 //requests to the CREATE Google Sheets via API

@@ -22,7 +22,9 @@ export default function ProjectEdit() {
   const cookies = new Cookies();
 
   const [message, setMessage] = useState(null);
-  const [isShowingAlert, setShowingAlert] = useState(false);
+
+
+
   
   const params = useParams(); 
   const navigate = useNavigate();
@@ -82,6 +84,8 @@ export default function ProjectEdit() {
 }
   
     useEffect(() => {
+
+    
 
    
     const id = params.id.toString();
@@ -294,6 +298,12 @@ async function onSubmit(e) {
 
               e.preventDefault();
 
+         
+
+              if(!message){ //https://stackoverflow.com/questions/61625297/dismiss-react-error-messages-after-a-timeout
+                setMessage(false);
+               }
+
              
               
                  // console.log('customer: '+ form.customer);
@@ -374,32 +384,21 @@ async function onSubmit(e) {
               //{"acknowledged":true,"modifiedCount":1,"upsertedId":null,"upsertedCount":0,"matchedCount":1}
               //{"acknowledged":true,"modifiedCount":1,"upsertedId":null,"upsertedCount":0,"matchedCount":1}
 
-              console.log("STACK COMPLETO" + JSON.stringify(result, null, "\t"));
+              // console.log("STACK COMPLETO" + JSON.stringify(result, null, "\t"));
 
-
-                 //     if (result.status == "200" ) {
 
                         console.log("-----PROJECT_UPDATE AXIOS RESULT ok !! -----");
-                        setShowingAlert(true);
+                                        
                         setMessage(result.data);
-                      
-                       
-                      
-                   
 
-                //      }
-                //      else {
-                //        console.log("-----PROJECT_UPDATE AXIOS RESULT NON HO TROVATO RECORD -----");
-                //      return  setMessage(" No record Found");
-                //      }
-
-                   //   navigate("/project_list"); 
+                        const timer = setTimeout(() => {
+                          setMessage("")
+                        }, 2000);
+                        return () => clearTimeout(timer);
 
                   })
 
-                  .catch((error) => {
-                     
-                  
+                  .catch((error) => {          
 
                     if(401 == error.response.status) {
                       window.location.href = "/";
@@ -409,8 +408,7 @@ async function onSubmit(e) {
 
                       console.error("SONO IN ERRORE !!!!!!!!!!!!!!!");
                      
-                      setErrore(error.response.data );
-                
+                      setErrore(error.response.data );               
 
                     }
                     else if (error.request) {
@@ -427,10 +425,7 @@ async function onSubmit(e) {
 
                       error = new Error();
                     }
-                  }); // fine catch
-              
-                
-              
+                  }); // fine catch              
               
               } // fine handleSubmit
 
@@ -718,6 +713,9 @@ async function onSubmit(e) {
       <Row>
       <Col> 
         <div className="inlineForm__notif">
+
+    
+
                {message && <h6  >{message}</h6>}
          </div>
      </Col>
