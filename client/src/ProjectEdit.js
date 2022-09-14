@@ -698,44 +698,18 @@ async function onSubmit(e) {
 <Row>
       <Col>
          <button type="submit" className={styles.green_btn}>Save</button>
+
+       </Col>
+       <Col>
+       {message && <h6>{message}</h6>}
        </Col>
        <Col>
       <button type="submit" className={styles.red_btn}   variant="danger" onClick={() => logout()}>Logout</button>
       </Col>
       </Row>      
   </Form>
-   
-   
-  
-  
-    
      
-      <Row>
-      <Col> 
-        <div className="inlineForm__notif">
-
     
-
-               {message && <h6  >{message}</h6>}
-         </div>
-     </Col>
-      </Row>   
-    
- 
-   
-    
- {/* 
-  
-  <div  className={`alert alert-success 
-          ${isShowingAlert ? 'alert-shown' : 'alert-hidden'}`}
-          onTransitionEnd={() => setShowingAlert(false)}  >
-         
-         {message}
-        
-  </div> 
-*/}
- 
-
    
  
 
