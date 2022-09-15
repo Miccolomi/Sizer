@@ -734,6 +734,7 @@ app.post("/create_spreadsheets", async (request, response) => {
   var URL_FILE="";
   let spreadsheetId; // quello di google
   let spreadsheetId_DB; // quello di mongo
+  let exist;
 
 //  authorize().then(create).catch(console.error);
 
@@ -760,74 +761,103 @@ app.post("/create_spreadsheets", async (request, response) => {
     if(spreadsheetId_DB){// è presente in Mongo 
                         
                         // se si, è presente in G drive,
-                        const exist = await checkIfIdSheetExistonGoogle(auth, spreadsheetId_DB);
-                        console.log("_____ create_spreadsheets exist on Google ?: _____ "+exist);
+                        try{ 
+                          exist = await checkIfIdSheetExistonGoogle(auth, spreadsheetId_DB);
+                          console.log("_____ create_spreadsheets exist on Google ?: _____ "+exist);
+                        }
+                        catch (e) {
+                          console.error(e);
+                          response.status(400).json({ message: e.message })
+                      } 
+
       
                                                                                                   if(exist)
                                                                                                   {  //se si non lo creo e faccio solo update
-
-                                                                                                    const update = await updateValues(spreadsheetId_DB, valueInputOption, array, auth);
-                                                                                                   
-                                                                                                    console.log('%d cells updated.', update.data.updatedCells); 
-                                                                                                    console.log('URL: ', update.config.url + URL_FILE);
-                                                                                                          if (!URL_FILE)
-                                                                                                          { // la prima volta non esiste
-                                                                                                            URL_FILE= "see your Google Drive Recent file"
-                                                                                                          }
-                                                                                           
-                                                                                                    return response.status(200).send({ message: "Google Sheet create Successfully with ", info_cell: update.data.updatedCells+ " updated cells. " ,  url: "Link to Google Sheet: "+ URL_FILE });
-                                                                                           
+                                                                                                    try{ 
+                                                                                                          const update = await updateValues(spreadsheetId_DB, valueInputOption, array, auth);
+                                                                                                          console.log('%d cells updated.', update.data.updatedCells); 
+                                                                                                          console.log('URL: ', update.config.url + URL_FILE);
+                                                                                                                if (!URL_FILE)
+                                                                                                                { // la prima volta non esiste
+                                                                                                                  URL_FILE= "see your Google Drive Recent file"
+                                                                                                                }
+                                                                                                
+                                                                                                          return response.status(200).send({ message: "Google Sheet create Successfully with ", info_cell: update.data.updatedCells+ " updated cells. " ,  url: "Link to Google Sheet: "+ URL_FILE });
+                                                                                                        }
+                                                                                                        catch (e) {
+                                                                                                          console.error(e);
+                                                                                                          response.status(400).json({ message: e.message })
+                                                                                                      }      
                                                                                                     }
                                                                                                     else // se invece non esiste
                                                                                                     {
-
                                                                                                        // creo file
-                                                                                                      spreadsheetId = await create(auth, docTitle);
+                                                                                                    try{    
+                                                                                                          spreadsheetId = await create(auth, docTitle);
+                                                                                                        }
+                                                                                                        catch (e) {
+                                                                                                          console.error(e);
+                                                                                                          response.status(400).json({ message: e.message })
+                                                                                                      }     
 
-                                                                                                      if (!spreadsheetId){// errore in creazione 
-                                                                                                                                            
+                                                                                                      if (!spreadsheetId){// errore in creazione                                
                                                                                                         console.log("_____ create_spreadsheets non è mai esistito in G e in creazione per la prima volta ottengo errore _____");
-                                                                                                        return response.status(400).send( "Google Sheet Error : Impossible to create sheet");
+                                                                                                       
+                                                                                                        return response.status(400).json({ message: "Google Sheet Error : Impossible to create sheet" })
                                                                                                       }
 
-                                                                                                        // faccio update dei dati                                           
-                                                                                                      const update = await updateValues(spreadsheetId, valueInputOption, array, auth);
-                                                                                                    
-                                                                                                      console.log('%d cells updated.', update.data.updatedCells); 
-                                                                                                      console.log('URL: ', update.config.url + URL_FILE);
-                                                                                                      if (!URL_FILE){ // la prima volta non esiste
-                                                                                                        URL_FILE= "see your Google Drive Recent file"
-                                                                                                      }
+                                                                                                        // faccio update dei dati 
+                                                                                                        try{                                               
+                                                                                                            const update = await updateValues(spreadsheetId, valueInputOption, array, auth);
+                                                                                                            console.log('%d cells updated.', update.data.updatedCells); 
+                                                                                                            console.log('URL: ', update.config.url + URL_FILE);
+                                                                                                            if (!URL_FILE){ // la prima volta non esiste
+                                                                                                              URL_FILE= "see your Google Drive Recent file"
+                                                                                                            }
 
-                                                                                                      return response.status(200).send({ message: "Google Sheet create Successfully with ", info_cell: update.data.updatedCells+ " updated cells. " ,  url: "Link to Google Sheet: "+ URL_FILE });
-
+                                                                                                            return response.status(200).send({ message: "Google Sheet create Successfully with ", info_cell: update.data.updatedCells+ " updated cells. " ,  url: "Link to Google Sheet: "+ URL_FILE });
+                                                                                                          }
+                                                                                                          catch (e) {
+                                                                                                            console.error(e);
+                                                                                                            response.status(400).json({ message: e.message })
+                                                                                                        }        
                                                                                                     }
 
 
                          } // se non lo trovo nel db ( e quindi manco su G) allora lo creo
      else { //non è presente in mongo e quindi neanche su G(credo) quindi lo creo
         // creo file
-        spreadsheetId = await create(auth, docTitle);
+        try{  
+              spreadsheetId = await create(auth, docTitle);
 
-                                                  if (!spreadsheetId){// errore in creazione 
-                                                                                        
-                                                    console.log("_____ create_spreadsheets non è mai esistito in G e in creazione per la prima volta ottengo errore _____");
-                                                    return response.status(400).send( "Google Sheet Error : Impossible to create sheet");
-                                                  }
-
+                                                        if (!spreadsheetId){// errore in creazione 
+                                                                                              
+                                                          console.log("_____ create_spreadsheets non è mai esistito in G e in creazione per la prima volta ottengo errore _____");
+                                                          return response.status(400).send( "Google Sheet Error : Impossible to create sheet");
+                                                        }
+        }
+        catch (e) {
+                     console.error(e);
+                     response.status(400).json({ message: e.message })
+         }                                                        
       
 
-         // faccio update dei dati                                           
-         const update = await updateValues(spreadsheetId, valueInputOption, array, auth);
-         console.log("_____ create_spreadsheets.... creato !!!: _____");
-         console.log('%d cells updated.', update.data.updatedCells); 
-         console.log('URL: ', update.config.url + URL_FILE);
-         if (!URL_FILE){ // la prima volta non esiste
-           URL_FILE= "see your Google Drive Recent file"
-         }
+         // faccio update dei dati    
+         try{                                           
+              const update = await updateValues(spreadsheetId, valueInputOption, array, auth);
+              console.log("_____ create_spreadsheets.... creato !!!: _____");
+              console.log('%d cells updated.', update.data.updatedCells); 
+              console.log('URL: ', update.config.url + URL_FILE);
+              if (!URL_FILE){ // la prima volta non esiste
+                URL_FILE= "see your Google Drive Recent file"
+              }
 
-         return response.status(200).send({ message: "Google Sheet create Successfully with ", info_cell: update.data.updatedCells+ " updated cells. " ,  url: "Link to Google Sheet: "+ URL_FILE });
-
+              return response.status(200).send({ message: "Google Sheet create Successfully with ", info_cell: update.data.updatedCells+ " updated cells. " ,  url: "Link to Google Sheet: "+ URL_FILE });
+            }
+            catch (e) {
+          console.error(e);
+          response.status(400).json({ message: e.message })
+}    
 
      }// fine else
 
@@ -913,7 +943,7 @@ async function checkIfIdSheetExistonDB (myquery) {
 
 async function makeArray (document) {
 
-    console.log("Array --> customer" + document.customer);
+    //console.log("Array --> customer" + document.customer);
 
     const _values = [
       // Cell values ...
@@ -951,8 +981,10 @@ async function makeArray (document) {
       ["Delete per:",  document.delete_per ],
       ["Concurrent write:", document.concurrent_write],
       ["Concurrent writen details:", document.concurrent_write_details   , "", "", "-- RAM --"                               ,"Data size for operational/OLTP" , "0,05", "Data size for for Analytical/OLAP" , "=(3/90)*F10"],
-      ["Concurrent read:", document.concurrent_read                      , "", "", "Working Set Transactional"               ,"=F10*G34" ],
-      ["Concurrent read details:", document.concurrent_read_details      , "", "", "Working Set Analytical"                  , "=F10*I34" ]
+      ["Concurrent read:", document.concurrent_read                      , "", "", ""                                        ,"MB"                             , "GB"                                        , "TB"  ],
+      ["Concurrent read details:", document.concurrent_read_details      , "", "", "Working Set Analytical"                  ,"=F10*I34"                       ,"=F36/1024"                                  ,"=G36/1024"  ],
+      [""                , ""                                            , "", "", "Working Set Transactional"               ,"=F10*G34"                        ,"=F37/1024"                                  ,"=G37/1024"],
+      [""                , ""                                            , "", "", "---"                  ,"=F10*I34"                        ,""                                          ,""]
 
       
       //["Totals", "=SUM(B2:B4)", "=SUM(C2:C4)", "=MAX(D2:D4)"]
