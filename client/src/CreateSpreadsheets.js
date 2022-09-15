@@ -121,6 +121,8 @@ export default  function CreateSpreadsheets() {
        console.log("SONO IN makeSizer e ho un errore: " + error.message);
 
        setIsLoading(false);   // Hide loading screen 
+       
+       setMessageError(error.message);
 
                             if(401 == error.response.status) {
                                 window.location.href = "/";

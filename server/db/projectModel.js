@@ -108,6 +108,9 @@ const ProjectSchema = new mongoose.Schema(
          total_query  :{
           type: Number
         },  
+        total_delete  :{
+          type: Number
+        },  
         insert_per   :{
           type: String
         },  
@@ -115,6 +118,9 @@ const ProjectSchema = new mongoose.Schema(
           type: String
         },  
         query_per   :{
+          type: String
+        },  
+        delete_per   :{
           type: String
         },  
         concurrent_write  :{
@@ -130,6 +136,7 @@ const ProjectSchema = new mongoose.Schema(
           type: String 
         },  
          // fine crud
+
          // google sheet
          spreadsheetId  :{
           type: String 

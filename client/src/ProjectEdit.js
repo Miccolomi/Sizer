@@ -363,9 +363,12 @@ async function onSubmit(e) {
                       total_insert : form.total_insert,
                       total_update : form.total_update,
                       total_query : form.total_query,
+                      total_delete : form.total_delete,
                       insert_per  : form.insert_per,
                       update_per  : form.update_per,
                       query_per  : form.query_per,
+                      delete_per  : form.delete_per,
+
                       concurrent_write : form.concurrent_write,
                       concurrent_read : form.concurrent_read,
                       concurrent_write_details : form.concurrent_write_details,
@@ -638,6 +641,18 @@ async function onSubmit(e) {
                       <Form.Check  type="radio" inline label="second" value={'second'}  checked={form.query_per === "second" } name="query_per"  onChange={(e) => updateForm({ query_per: e.target.value })} />
                       <Form.Check  type="radio" inline label="minute" value={'minute'}  checked={form.query_per === "minute"}  name="query_per"  onChange={(e) => updateForm({ query_per: e.target.value })}/>
                       <Form.Check  type="radio" inline label="day"    value={'day'}     checked={form.query_per === "day" }    name="query_per"  onChange={(e) => updateForm({ query_per: e.target.value })} />
+                  </Form.Group>
+
+                  <Form.Label>Total Delete:</Form.Label>
+                  <InputGroup className="mb-3">
+                    <Form.Control type="text"  value={form.total_delete  || ''} onChange={(e) => updateForm({ total_delete: e.target.value })}/>
+                  </InputGroup> 
+
+                  <Form.Label>Delete per:</Form.Label>
+                  <Form.Group  controlId="query_per"> 
+                      <Form.Check  type="radio" inline label="second" value={'second'}  checked={form.delete_per === "second" } name="delete_per"  onChange={(e) => updateForm({ delete_per: e.target.value })} />
+                      <Form.Check  type="radio" inline label="minute" value={'minute'}  checked={form.delete_per === "minute"}  name="delete_per"  onChange={(e) => updateForm({ delete_per: e.target.value })}/>
+                      <Form.Check  type="radio" inline label="day"    value={'day'}     checked={form.delete_per === "day" }    name="delete_per"  onChange={(e) => updateForm({ delete_per: e.target.value })} />
                   </Form.Group>
 
                   <Form.Label>Concurrent write:</Form.Label>

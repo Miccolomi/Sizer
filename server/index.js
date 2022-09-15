@@ -458,9 +458,6 @@ app.get("/project_edit", auth, async (request, response) => {
 
 });
 
-
-
-
 // This section will help you update a record by id.
 app.put("/project_update", auth, async (request, response) => {
 
@@ -502,9 +499,11 @@ app.put("/project_update", auth, async (request, response) => {
         total_insert : request.query.total_insert,
         total_update : request.query.total_update,
         total_query : request.query.total_query,
+        total_delete : request.query.total_delete,
         insert_per : request.query.insert_per,
         update_per : request.query.update_per,
         query_per : request.query.query_per,
+        delete_per : request.query.delete_per,
         concurrent_write : request.query.concurrent_write,
         concurrent_write_details : request.query.concurrent_write_details,
         concurrent_read : request.query.concurrent_read,
@@ -721,6 +720,9 @@ app.post("/create_spreadsheets", async (request, response) => {
   const { authenticate } = require('@google-cloud/local-auth');
   const { google } = require('googleapis');
 
+  const client_id = "477691067534-eq6l07e0eqhie1748qo2adackfr5muj8.apps.googleusercontent.com";
+  const client_secret = "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";
+
   // If modifying these scopes, delete token.json.
   const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
   // The file token.json stores the user's access and refresh tokens, and is
@@ -730,7 +732,8 @@ app.post("/create_spreadsheets", async (request, response) => {
   const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials_google_sheet.json');
 
   var URL_FILE="";
-
+  let spreadsheetId; // quello di google
+  let spreadsheetId_DB; // quello di mongo
 
 //  authorize().then(create).catch(console.error);
 
@@ -744,68 +747,91 @@ app.post("/create_spreadsheets", async (request, response) => {
     const data = await getProjectData(myquery);
     console.log("_____ create_spreadsheets ho i dati _____");
 
-    let spreadsheetId = data._doc.spreadsheetId; // mi prendo lo spreadsheetId dal DB ma mi serve ?????? POTREI NON TROVARLO SE è la prima volta 
-    console.log("_____ create_spreadsheets id: _____"+spreadsheetId);
+    spreadsheetId_DB = data._doc.spreadsheetId; // mi prendo lo spreadsheetId dal DB  POTREI NON TROVARLO SE è la prima volta 
+    console.log("_____ create_spreadsheets id nel DB: _____"+spreadsheetId_DB);
 
     let docTitle = data._doc.customer +" - "+data._doc.project ; // mi prendo lo spreadsheetId dal DB ma mi serve ??????
     console.log("_____ create_spreadsheets docTitle: _____"+data._doc.customer +" - "+data._doc.project );
 
-    // se lo trovo nel db lo cerco su GOOGLE
-    if(spreadsheetId){
-       // se presente su DB devo cmq verificare che esista davvero su drive, potrebbe essere stato cancellato o peggio ancora nel cestino...
-    const exist = await checkIfIdSheetExistonGoogle(auth, spreadsheetId);
-    console.log("_____ create_spreadsheets exist on Google ?: _____ "+exist);
-      
-      if(!exist){
-
-         // se non lo trovo In G allora creo di nuovo il  file
-         spreadsheetId = await create(auth, docTitle);
-         console.log("_____ create_spreadsheets non esiste in google allora lo creo e questo è il suo ID: _____"+spreadsheetId);
-
-         // e devo camncellarlo dal DB !!!
-
-      }
-
-     }
-     else { //quindi è la prima volta che lancio il make sizer, creo il file
-
-      spreadsheetId = await create(auth, docTitle);
-      console.log("_____ create_spreadsheets non esiste in google allora lo creo e questo è il suo ID: _____"+spreadsheetId);
-
-
-     }
-
-   
-         // creo array da scivere
-         const array = await makeArray(data._doc);
-         // e se non creo i dati che succede ??? gestire errore !!!!!!
-
-         console.log("_____ create_spreadsheets ho creato array da scrivere: _____");
-         // e poi scrivo
-         if(spreadsheetId){
-
-          const update = await updateValues(spreadsheetId, valueInputOption, array, auth);
-          console.log("_____ create_spreadsheets.... creato !!!: _____");
-          console.log('%d cells updated.', update.data.updatedCells);
-          console.log('URL: ', update.config.url + URL_FILE);
-          if (!URL_FILE){ // la rima volta non esiste
-            URL_FILE= "see your Google Drive Recent file"
-          }
-
-          return response.status(200).send({ message: "Google Sheet create Successfully with ", info_cell: update.data.updatedCells+ " updated cells. " ,  url: "Link to Google Sheet: "+ URL_FILE });
- 
-         }
-         else {
-          // devo tornare eerore
-          console.log("_____ ERRORE !!!!!!!!!!!! create_spreadsheets non esiste spreadsheetId e non lo ho creato...!!!!!!!!!!!!!: _____");
-         }
-       
-
-  
-  //  const spreadsheetId  = "1LF87ZFUi_6aYmh9RAqNdCMm5KoeKWedvQ7oBASrzVIQ";
+       // creo array da scivere sul file
+       const array = await makeArray(data._doc);
+       console.log("_____ create_spreadsheets ho creato array da scrivere: _____");
     
-   
-  }
+    if(spreadsheetId_DB){// è presente in Mongo 
+                        
+                        // se si, è presente in G drive,
+                        const exist = await checkIfIdSheetExistonGoogle(auth, spreadsheetId_DB);
+                        console.log("_____ create_spreadsheets exist on Google ?: _____ "+exist);
+      
+                                                                                                  if(exist)
+                                                                                                  {  //se si non lo creo e faccio solo update
+
+                                                                                                    const update = await updateValues(spreadsheetId_DB, valueInputOption, array, auth);
+                                                                                                   
+                                                                                                    console.log('%d cells updated.', update.data.updatedCells); 
+                                                                                                    console.log('URL: ', update.config.url + URL_FILE);
+                                                                                                          if (!URL_FILE)
+                                                                                                          { // la prima volta non esiste
+                                                                                                            URL_FILE= "see your Google Drive Recent file"
+                                                                                                          }
+                                                                                           
+                                                                                                    return response.status(200).send({ message: "Google Sheet create Successfully with ", info_cell: update.data.updatedCells+ " updated cells. " ,  url: "Link to Google Sheet: "+ URL_FILE });
+                                                                                           
+                                                                                                    }
+                                                                                                    else // se invece non esiste
+                                                                                                    {
+
+                                                                                                       // creo file
+                                                                                                      spreadsheetId = await create(auth, docTitle);
+
+                                                                                                      if (!spreadsheetId){// errore in creazione 
+                                                                                                                                            
+                                                                                                        console.log("_____ create_spreadsheets non è mai esistito in G e in creazione per la prima volta ottengo errore _____");
+                                                                                                        return response.status(400).send( "Google Sheet Error : Impossible to create sheet");
+                                                                                                      }
+
+                                                                                                        // faccio update dei dati                                           
+                                                                                                      const update = await updateValues(spreadsheetId, valueInputOption, array, auth);
+                                                                                                    
+                                                                                                      console.log('%d cells updated.', update.data.updatedCells); 
+                                                                                                      console.log('URL: ', update.config.url + URL_FILE);
+                                                                                                      if (!URL_FILE){ // la prima volta non esiste
+                                                                                                        URL_FILE= "see your Google Drive Recent file"
+                                                                                                      }
+
+                                                                                                      return response.status(200).send({ message: "Google Sheet create Successfully with ", info_cell: update.data.updatedCells+ " updated cells. " ,  url: "Link to Google Sheet: "+ URL_FILE });
+
+                                                                                                    }
+
+
+                         } // se non lo trovo nel db ( e quindi manco su G) allora lo creo
+     else { //non è presente in mongo e quindi neanche su G(credo) quindi lo creo
+        // creo file
+        spreadsheetId = await create(auth, docTitle);
+
+                                                  if (!spreadsheetId){// errore in creazione 
+                                                                                        
+                                                    console.log("_____ create_spreadsheets non è mai esistito in G e in creazione per la prima volta ottengo errore _____");
+                                                    return response.status(400).send( "Google Sheet Error : Impossible to create sheet");
+                                                  }
+
+      
+
+         // faccio update dei dati                                           
+         const update = await updateValues(spreadsheetId, valueInputOption, array, auth);
+         console.log("_____ create_spreadsheets.... creato !!!: _____");
+         console.log('%d cells updated.', update.data.updatedCells); 
+         console.log('URL: ', update.config.url + URL_FILE);
+         if (!URL_FILE){ // la prima volta non esiste
+           URL_FILE= "see your Google Drive Recent file"
+         }
+
+         return response.status(200).send({ message: "Google Sheet create Successfully with ", info_cell: update.data.updatedCells+ " updated cells. " ,  url: "Link to Google Sheet: "+ URL_FILE });
+
+
+     }// fine else
+
+  }// fine CreaExcel
   
   // Make 
   CreaExcel();
@@ -849,7 +875,12 @@ app.post("/create_spreadsheets", async (request, response) => {
     } catch (err) {
       console.log(err.message);
       if (err.code == "ETIMEDOUT"){
+        console.log(err.message);
         return response.status(400).send( "TimeOut Error :" +  err.message );
+      }
+      if (err.code == "400"){
+        console.log(err.message);
+        return response.status(400).send( "Generic Error :" +  err.message );
       }
       return false; // vuol dire che non esiste !!!
     }
@@ -886,46 +917,47 @@ async function makeArray (document) {
 
     const _values = [
       // Cell values ...
-      ["Project "],
+      ["-- PROJECT --"],
       ["Customer:", document.customer],
       ["Project:", document.project],
       ["Description:", document.contesto],
       ["Use Case:", document.usecase],
-      ["Architecture "],
-      ["Infrastructure:", document.projectarchitecture],
+      ["-- ARCHITECTURE --"],
+      ["Infrastructure:", document.projectarchitecture,     "", "", "-- Storage Size --" ],
       ["Type:"                     , document.Architecture, "", "", "Storage"  , "MB"          ,"GB"      ,"TB"],
       ["Number of Production Site:", document.PRSite      , "", "", "Data Size","=B14*B21/1024","=F9/1024","=G9/1024"],
-      ["Disaster Recovery Site:", document.DRSite         ,"",  "", "Index Size","=B14*B18*B19/1024/1024", "=F10/1024","=g10/1024"  ],
-      ["Storage Type:", document.PRStorage],
-      ["Data "],
-      ["Initial data or data to import:", document.initial_data],
-      ["Total Number of NEW Documents:", document.documents],
+      ["Disaster Recovery Site:", document.DRSite         ,"",  "", "Index Size","=B14*B18*B19/1024/1024", "=F10/1024","=G10/1024"  ],
+      ["Storage Type:", document.PRStorage                ,"" , "", "Oplog","=(B25*60*60*24*B21/1024)+(B27*60*60*24*B21*0,02/1024)+(B31*60*60*24*10/1024)", "=F11/1024","=G11/1024"  ],
+      ["-- DATA --"                                 ,""   ,"" ,"",  "Buffer", "=SUM(F10:F11)*0,1", "=F12/1024","=G12/1024" ],
+      ["Initial data or data to import:", document.initial_data , "" ,"", "-- Total Storage Size --", "=SUM(F9:F12)" , "=F13/1024","=G13/1024" ],
+      ["Total Number of NEW Documents:", document.documents     , "" ,"", "-- Total Storage Size on disk --", "=F13/3,14" , "=F14/1024","=G14/1024" ],
       ["Indication of growth:", document.growth],
       ["Growth Details:", document.growthspec],
       ["Average Number of Fields per documents:", document.average_fields_documents],
       ["Number of Index per document:", document.index_size],
-      ["Index Entry Size:", "12"], //fisso da rivedere
-      ["Number of documents in working set:", document.working_set],
-      ["Average Sizing of single document:", document.average_sizing_documents],
-      ["Document Retention:", document.document_retention],
-      ["Document Retention Period:", document.document_retention_period],
-      ["CRUD "],
+      ["----- Index Entry Size:(da modificare) ------", "12"], //fisso da rivedere
+      ["Number of documents in working set:", document.working_set                  ,"" , "", "-- # Operations / Second --"],
+      ["Average Sizing of single document:", document.average_sizing_documents      ,"" ,"", "Find" ,"=B29/24/60/60" , "ops/sec"],
+      ["Document Retention:", document.document_retention                           ,"" ,"", "Insert" ,"=B25/24/60/60" , "ops/sec"],
+      ["Document Retention Period:", document.document_retention_period             , "" ,"", "Update" ,"=B27/24/60/60" , "ops/sec"],
+      ["-- CRUD --"                                                            , "" , "" ,"", "Delete" ,"=B31/24/60/60" , "ops/sec"],
       ["Total Insert:", document.total_insert],
       ["Insert per:", document.insert_per],
       ["Total Update:", document.total_update],
       ["Update per:", document.update_per],
-      ["Total Query:", document.total_query],
-      ["Query per:", document.query_per],
+      ["Total Query:", document.total_query   , "", "", "-- Disk Speed --" ],
+      ["Query per:", document.query_per        , "", "", "IOPS" , "=SUM(F21:F24)/20" ],
+      ["Total Delete:", document.total_delete],
+      ["Delete per:",  document.delete_per ],
       ["Concurrent write:", document.concurrent_write],
-      ["Concurrent writen details:", document.concurrent_write_details],
-      ["Concurrent read:", document.concurrent_read],
-      ["Concurrent read details:", document.concurrent_read_details],
-      ["CIAO "]
+      ["Concurrent writen details:", document.concurrent_write_details   , "", "", "-- RAM --"                               ,"Data size for operational/OLTP" , "0,05", "Data size for for Analytical/OLAP" , "=(3/90)*F10"],
+      ["Concurrent read:", document.concurrent_read                      , "", "", "Working Set Transactional"               ,"=F10*G34" ],
+      ["Concurrent read details:", document.concurrent_read_details      , "", "", "Working Set Analytical"                  , "=F10*I34" ]
 
       
       //["Totals", "=SUM(B2:B4)", "=SUM(C2:C4)", "=MAX(D2:D4)"]
     ];
-
+ 
     return _values;
     
     };
@@ -1059,7 +1091,7 @@ async function create(auth, docTitle) {
     } catch (err) {
       console.log(err);
       console.log(err.message);
-      response.status(400).json({ message: err.message })
+      return response.status(400).json({ message: err.message })
       
     }
   };                                                         // fine create
