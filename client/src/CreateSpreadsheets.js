@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from "react";
-
 import axios from "axios";
 import Cookies from "universal-cookie";
 import { useParams, useNavigate } from "react-router";
 import Alert from 'react-bootstrap/Alert';
-
-
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';

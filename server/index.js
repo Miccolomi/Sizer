@@ -702,6 +702,31 @@ app.post("/_getData", async (request, response)=> {
 
 
 })// end
+
+app.post("/_getUserType", async (request, response)=> {
+
+    //Chi mi sta chiamando ?
+    const query_mongo = { email: request.query.user_email }; 
+    const who =  User.find(query_mongo);
+  try {
+
+  
+    const who =  await User.findOne(query_mongo);
+  
+    console.log("______ _getUserType ottengo questo_____: " + who.type);
+  
+    return response.status(200).json({message: who.type});
+  }
+  catch (err) {
+    console.log('_______SONO IN _getUserType ERRROR__________', err)
+   return response.status(400).json({ message: err.message })
+  
+  }
+  
+
+
+})// end
+
 //FINE UTILI
 
 
@@ -984,7 +1009,7 @@ async function makeArray (document) {
       ["Concurrent read:", document.concurrent_read                      , "", "", ""                                        ,"MB"                             , "GB"                                        , "TB"  ],
       ["Concurrent read details:", document.concurrent_read_details      , "", "", "Working Set Analytical"                  ,"=F10*I34"                       ,"=F36/1024"                                  ,"=G36/1024"  ],
       [""                , ""                                            , "", "", "Working Set Transactional"               ,"=F10*G34"                        ,"=F37/1024"                                  ,"=G37/1024"],
-      [""                , ""                                            , "", "", "---"                  ,"=F10*I34"                        ,""                                          ,""]
+      [""                , ""                                            , "", "", "---"                  ,""                        ,""                                          ,""]
 
       
       //["Totals", "=SUM(B2:B4)", "=SUM(C2:C4)", "=MAX(D2:D4)"]

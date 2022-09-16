@@ -9,6 +9,7 @@ import { useParams, useNavigate } from "react-router";
 import axios from "axios";
 import Cookies from "universal-cookie";
 import styles from "./utils/newproject/styles.module.css";
+import Alert from 'react-bootstrap/Alert';
 
 
 
@@ -19,12 +20,71 @@ export default function ProjectEdit() {
   console.log("-----SONO IN PROJECT EDIT----- ");
 
 
-  const cookies = new Cookies();
 
+  const cookies = new Cookies();
+  const token = cookies.get("TOKEN");
   const [message, setMessage] = useState(null);
 
 
+ async function handleClick ()  { // per fare il back
 
+
+    //alert("sono in on handleClick");
+
+    var user_email ="" 
+    var Buffer = require('buffer/').Buffer;
+    console.log("---SICUREZZA CHECK----SONO IN PROJECT EDIT e TOKEN TROVATO: "+ token); 
+
+  try{
+        user_email = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString()).userEmail;
+        console.log("---SICUREZZA CHECK----SONO IN PROJECT EDIT  e utente che ho trovato è: "+ user_email);
+
+       
+        const configuration = {
+          method: "post",
+          url: "/_getUserType",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: {
+            user_email: user_email
+          }
+        };
+  
+         axios(configuration)
+          .then((result) => {
+                           
+  
+                              if (result.data.message == "INT"){
+                                navigate('/project_list_int', {replace: true});
+                              }
+                              else{
+                                navigate('/project_list_ext', {replace: true});
+                              }
+            
+          })
+    
+          .catch((error) => {
+    
+                              if(401 == error.response) {
+                                window.location.href = "/";
+                            }
+                  
+                            setErrore(error.message );          
+    
+         
+          }); // fine catch
+
+
+  }
+  catch(error){
+    console.log("---SICUREZZA CHECK----SONO IN PROJECTLIST INT e non ho trovato utente connesso !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + error);  
+    return;
+  }
+
+
+  
+  };// fine handleClick
   
   const params = useParams(); 
   const navigate = useNavigate();
@@ -33,6 +93,7 @@ export default function ProjectEdit() {
 
   // campi della Form
   const [form, setForm] = useState({
+
    // project
     project : "",
     usecase : "",
@@ -44,6 +105,7 @@ export default function ProjectEdit() {
     PRStorage : "",
     Atlas : "",
     Architecture : "",
+
 // document section
     documents : "",
     initial_data : "",
@@ -56,8 +118,7 @@ export default function ProjectEdit() {
     average_sizing_documents : "",
 
     index_size : "",
-    working_set : "",
- // fine document section   
+    working_set : "", 
 
     // CRUD
     total_insert : "",
@@ -70,7 +131,7 @@ export default function ProjectEdit() {
     concurrent_read : "",
     concurrent_write_details : "",
     concurrent_read_details : "",
-    // fine CRUD
+
       
  //   records: [],
    });
@@ -85,11 +146,7 @@ export default function ProjectEdit() {
   
     useEffect(() => {
 
-    
-
-   
     const id = params.id.toString();
-  
     console.log("-----EFFECT ----- SONO IN PROJECT EDIT -----ID: " + id);
 
     const cookies = new Cookies();
@@ -111,22 +168,15 @@ export default function ProjectEdit() {
 
      axios(configuration)
       .then((result) => {
-
-
          setForm(result.data);
-        
-        
       })
-
       .catch((error) => {
-
-        if(401 == error.response.status) {
-          window.location.href = "/";
-       }
-
-     
+                              if(401 == error.response.status) {
+                                window.location.href = "/";
+                            }
+     //  setErrore(error.response.data.message );
+       setErrore(error.message );          
       }); // fine catch
-
 },[params.id, navigate]);
 
 
@@ -231,10 +281,6 @@ function renderAtlas() {
     return input;
 };
 
-
-
-
-
 function renderUseCase() {
 
   let input;
@@ -283,10 +329,6 @@ function renderUseCase() {
 
 };
 
-
-
-
-
  // These methods will update the state properties.
  function updateForm(value) {
   return setForm((prev) => {
@@ -298,6 +340,8 @@ async function onSubmit(e) {
 
               e.preventDefault();
 
+             // alert("sono in on submit");
+
          
 
               if(!message){ //https://stackoverflow.com/questions/61625297/dismiss-react-error-messages-after-a-timeout
@@ -306,7 +350,7 @@ async function onSubmit(e) {
 
              
               
-                 // console.log('customer: '+ form.customer);
+                 /* debug
                   console.log('----- SONO IN PROJECT_UPDATE -----PRSite: '+ form.PRSite);
                   console.log('----- SONO IN PROJECT_UPDATE -----DRSite: ' + form.DRSite);
                   console.log('----- SONO IN PROJECT_UPDATE -----PRStorage: ' + form.PRStorage);
@@ -321,12 +365,11 @@ async function onSubmit(e) {
                   console.log('----- SONO IN PROJECT_UPDATE -----growthspec: ' + form.growthspec);
                   console.log('----- SONO IN PROJECT_UPDATE -----document_retention_period: ' + form.document_retention_period);
                   console.log('----- SONO IN PROJECT_UPDATE -----document_retention: ' + form.document_retention);
+                */
 
               const id = params.id.toString();
               console.log("----- ----- SONO IN PROJECT_UPDATE -----ID: " + id);   
-              
             
-
               const cookies = new Cookies();
               // get token generated on login
               const token = cookies.get("TOKEN");
@@ -379,7 +422,6 @@ async function onSubmit(e) {
 
                   console.log("----- SONO IN PROJECT_UPDATE ----- OK CONFIG " );
                 
-
                   await  axios(configuration)
                   .then((result) => {
 
@@ -389,9 +431,6 @@ async function onSubmit(e) {
 
               // console.log("STACK COMPLETO" + JSON.stringify(result, null, "\t"));
 
-
-                        console.log("-----PROJECT_UPDATE AXIOS RESULT ok !! -----");
-                                        
                         setMessage(result.data);
 
                         const timer = setTimeout(() => {
@@ -402,19 +441,13 @@ async function onSubmit(e) {
                   })
 
                   .catch((error) => {          
-
-                    if(401 == error.response.status) {
-                      window.location.href = "/";
-                   }
+                                      if(401 == error.response.status) {
+                                        window.location.href = "/";
+                                    }
 
                       console.error("SONO IN ERRORE !!!!!!!!!!!!!!!"+ error.message);
-                     
-                      setErrore(error.message );               
-
-                   
-                   
+                      setErrore(error.message );                
                   }); // fine catch              
-              
               } // fine handleSubmit
 
 
@@ -680,11 +713,7 @@ async function onSubmit(e) {
                   </Form.Group>
 
 
-          
-
-
-
-
+        
       </Tab>
 
       <Tab eventKey= {form.usecase}  title=  {form.usecase} >
@@ -695,20 +724,33 @@ async function onSubmit(e) {
     </Tabs>
 
     <p/><p/><p/><p/><p/><p/>
-<Row>
-      <Col>
-         <button type="submit" className={styles.green_btn}>Save</button>
+  
+  
+         <Row>
+           <Col >
+             <button type="submit" className={styles.green_btn}>Save</button>
+           </Col>
+           <Col>
+             {message &&
+               <Alert key="success" variant="success">  <p> {message} </p>   </Alert> }
 
-       </Col>
-       <Col>
-       {message && <h6>{message}</h6>}  {errore && <h6>{errore}</h6>}
-       </Col>
-       <Col>
-      <button type="submit" className={styles.red_btn}   variant="danger" onClick={() => logout()}>Logout</button>
-      </Col>
-      </Row>      
+           </Col>
+           <Col>
+             {errore && <Alert key="danger" variant="danger">  <p> {errore} </p>   </Alert>}
+           </Col>
+         </Row>
+
   </Form>
-     
+
+  <Row>
+       <Col>
+       <button type="submit" className={styles.blu_btn}  onClick={() =>handleClick()}>Back</button>
+       </Col>
+       <Col>
+      <button type="submit" className={styles.red_btn}   variant="danger" onClick={() =>logout()}>Logout</button>
+      </Col>
+      </Row>   
+  
     
    
  
