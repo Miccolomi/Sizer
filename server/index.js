@@ -807,7 +807,7 @@ app.post("/create_spreadsheets", async (request, response) => {
                                                                                                                   URL_FILE= "see your Google Drive Recent file"
                                                                                                                 }
                                                                                                 
-                                                                                                          return response.status(200).send({ message: "Google Sheet create Successfully with ", info_cell: update.data.updatedCells+ " updated cells. " ,  url: "Link to Google Sheet: "+ URL_FILE });
+                                                                                                          return response.status(200).send({ message: "Google Sheet name:  \""+docTitle+"\" create Successfully with ", info_cell: update.data.updatedCells+ " updated cells. " ,  url: "Link to Google Sheet: "+ URL_FILE });
                                                                                                         }
                                                                                                         catch (e) {
                                                                                                           console.error(e);
@@ -840,7 +840,7 @@ app.post("/create_spreadsheets", async (request, response) => {
                                                                                                               URL_FILE= "see your Google Drive Recent file"
                                                                                                             }
 
-                                                                                                            return response.status(200).send({ message: "Google Sheet create Successfully with ", info_cell: update.data.updatedCells+ " updated cells. " ,  url: "Link to Google Sheet: "+ URL_FILE });
+                                                                                                            return response.status(200).send({ message:  "Google Sheet name:  \""+docTitle+"\" create Successfully with ", info_cell: update.data.updatedCells+ " updated cells. " ,  url: "Link to Google Sheet: "+ URL_FILE });
                                                                                                           }
                                                                                                           catch (e) {
                                                                                                             console.error(e);
@@ -877,7 +877,7 @@ app.post("/create_spreadsheets", async (request, response) => {
                 URL_FILE= "see your Google Drive Recent file"
               }
 
-              return response.status(200).send({ message: "Google Sheet create Successfully with ", info_cell: update.data.updatedCells+ " updated cells. " ,  url: "Link to Google Sheet: "+ URL_FILE });
+              return response.status(200).send({ message:  "Google Sheet name:  \""+docTitle+"\" create Successfully with ", info_cell: update.data.updatedCells+ " updated cells. " ,  url: "Link to Google Sheet: "+ URL_FILE });
             }
             catch (e) {
           console.error(e);
