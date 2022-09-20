@@ -1321,20 +1321,16 @@ app.post("/create_spreadsheets_v2", async (request, response) => {
           auth,
           spreadsheetId,
        });
-       console.log("_____ create_spreadsheets ho i dati del file " + sheetInfo);
-        //Eventual Read from the spreadsheet
-       //const readData = await googleSheetsInstance.spreadsheets.values.get({
-       //   auth, //auth object
-       //  spreadsheetId, // spreadsheet id
-       //  range: "Sheet1!A:A", //range of cells to read from.
+       console.log("_____ create_spreadsheetslink al file: " + sheetInfo.data.spreadsheetUrl);
+       URL_FILE = sheetInfo.data.spreadsheetUrl;
 
         // 6) prendo i dati del progetto dal db
     const data = await getProjectData(myquery);
-    console.log("_____ create_spreadsheets ho i dati");
+    console.log("_____ creato dati");
     // 7)  mi prendo lo spreadsheetId dal DB 
-    // 8) creo il titolo del file
+    // 8) creo il titolo del file 
     let docTitle = data._doc.customer +" - "+data._doc.project ; // forse non serve....
-    console.log("_____ create_spreadsheets docTitle: _____"+data._doc.customer +" - "+data._doc.project );
+    console.log("_____ create_spreadsheets NOME FILE: _____"+data._doc.customer +" - "+data._doc.project );
     // 9) creo array da scivere sul file
     const values = await makeArray(data._doc);
     console.log("_____ create_spreadsheets ho creato array da scrivere: _____");
@@ -1351,13 +1347,13 @@ app.post("/create_spreadsheets_v2", async (request, response) => {
 
     console.log("_____ create_spreadsheets.... creato !!!: _____");
     console.log('%d cells updated.', update.data.updatedCells); 
-    console.log('URL: ', update.config.url + URL_FILE);
+    console.log('URL: ', URL_FILE);
     if (!URL_FILE){ // la prima volta non esiste
       URL_FILE= "see your Google Drive Recent file"
     }
 
     //return response.status(200).send({ message:  "Google Sheet name:  \""+docTitle+"\" create Successfully with ", info_cell: update.data.updatedCells+ " updated cells. " ,  url: "Link to Google Sheet: "+ URL_FILE });
-    return response.status(200).send({ message:  "Google Sheet name: create Successfully with ", info_cell: update.data.updatedCells+ " updated cells. " ,  url: "Link to Google Sheet: "+ URL_FILE });
+    return response.status(200).send({ message:  "Google Sheet Update Successfully with ", info_cell: update.data.updatedCells+ " cells. " ,  url: "Link to Google Sheet: "+ URL_FILE  });
 
 
   
@@ -1450,10 +1446,8 @@ async function checkIfIdSheetExistonDB (myquery) {
 
 async function makeArray (document) {
 
-    //console.log("Array --> customer" + document.customer);
 
     const _values = [
-      // Cell values ...
       ["-- PROJECT --", "","","","SHARDED CLUSTER","0","(put 1 or 0 for yes or no)"],
       ["Customer:", document.customer, "","","REPLICA SETS","1", "(put 1 or 0 for yes or no)"],
       ["Project:", document.project],
@@ -1472,7 +1466,7 @@ async function makeArray (document) {
       ["Growth Details:", document.growthspec],
       ["Average Number of Fields per documents:", document.average_fields_documents],
       ["Number of Index per document:", document.index_size],
-      ["",                                   ,""                                    ,"", "--- INDEX ENTRY SIZE: ---", "12"],
+      ["",                                   ,""                                    ,"", "--- INDEX ENTRY SIZE: ---", "12","byte"],
       ["Number of documents in working set:", document.working_set                  ,"" , "", "-- # Operations / Second --"],
       ["Average Sizing of single document:", document.average_sizing_documents      ,"" ,"", "Find" ,"=B29/24/60/60" , "ops/sec"],
       ["Document Retention:", document.document_retention                           ,"" ,"", "Insert" ,"=B25/24/60/60" , "ops/sec"],
