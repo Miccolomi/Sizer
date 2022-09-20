@@ -586,7 +586,7 @@ async function onSubmit(e) {
                 <Form.Text className="text-primary">Info: </Form.Text>
                 <br/>
                 <Form.Text className="text-muted">“Working set” is basically the amount of data and indexes that will be active/in use by your system at any given time. </Form.Text>
-                <Form.Text className="text-muted">The key point is to ask yourself: do I have enough RAM for my working set? If the answer is: “I don’t know”, then get yourself to the position of knowing.</Form.Text>
+             {/*    <Form.Text className="text-muted">The key point is to ask yourself: do I have enough RAM for my working set? If the answer is: “I don’t know”, then get yourself to the position of knowing.</Form.Text> */}
       </Col>
   </Row>
              <Row>

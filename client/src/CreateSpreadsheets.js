@@ -10,9 +10,7 @@ import Form from 'react-bootstrap/Form';
 import styles from "./utils/newproject/styles.module.css";
 
 import LoadingSpinner from "./LoadingSpinner";
-
-
-
+import google_image from './google_Sheet_ex.png'; // image
 
 export default  function CreateSpreadsheets() {
 
@@ -21,12 +19,15 @@ export default  function CreateSpreadsheets() {
     const cookies = new Cookies();
     const token = cookies.get("TOKEN");
     const params = useParams(); 
-    const [message, setMessage] = useState(null);
-    const [message1, setMessage1] = useState(null);
-    const [message2, setMessage2] = useState(null);
+    const [message_trovato, setMessageTrovato] = useState(null);
+    const [message_trovato1, setMessageTrovato1] = useState(null);
+    const [message_non_trovato, setMessageNonTrovato] = useState(null);
+    const [message_non_trovato1, setMessageNonTrovato1] = useState(null);
+    const [messageResult, setMessageResult] = useState(null);
     const [message_error, setMessageError] = useState(null);
     const id = params.id.toString();
     const navigate = useNavigate();
+    const [spreadsheetId, setSpreadsheetId] = useState("");
     
     const handleClick = () => {
         navigate('/project_list_int', {replace: true});
@@ -37,7 +38,6 @@ export default  function CreateSpreadsheets() {
 
 
     // provo a prendere info inziali
-
     useEffect(() => {
 
     
@@ -51,7 +51,7 @@ export default  function CreateSpreadsheets() {
              params: { id: id }
           };
 
-          console.log("sono dopo configuration_data ");
+         
 
            axios(configuration_data)
           .then((result) => {
@@ -59,15 +59,15 @@ export default  function CreateSpreadsheets() {
            console.log("SONO IN makeSizer - sono in CreateSpreadsheets - risultato: "+ result.data.spreadsheetId); 
     
             if (result.data.spreadsheetId){
-                 setMessage("This is you existing google sheet ID: " + result.data.spreadsheetId );
-                 setMessage1("Mean that your file already exist and will be overwrite. Google is not going to check if this file has been trashed or not, or what directory it resides in, if you not found the sheet in Google Drive, please check if its been trashed");
+                 setMessageTrovato("This is you existing google sheet ID: " + result.data.spreadsheetId );
+                 setMessageTrovato1("Mean that your file already exist and will be overwrite. Google is not going to check if this file has been trashed or not, or what directory it resides in, if you not found the sheet in Google Drive, please check if its been trashed");
               }
             else {
-                setMessage("This is the first time that you create Sizer on Google Sheet.");
-            }  
+                setMessageNonTrovato("This is the first time that you create Sizer on Google Sheet.");
+                setMessageNonTrovato1("true");
     
-          })
-     
+                }
+            })
           .catch(function (error){
            console.log("SONO IN CreateSpreadsheets e ho un errore: " + error);
 
@@ -77,11 +77,12 @@ export default  function CreateSpreadsheets() {
                                     window.location.href = "/";
                                 }
     
-             })
+            })
 
 
         
-    }, []); // fine effect 
+    }, []); 
+    // fine effect 
 
 
     async function onSubmit(e) {
@@ -89,29 +90,31 @@ export default  function CreateSpreadsheets() {
         e.preventDefault();
 
         setIsLoading(true);
-
+      //  setMessageTrovato(null);
+       // setMessageTrovato1(null);
+        setMessageError(null); 
+        setMessageResult(null);
+        
 
     const configuration_create = {
         method: "POST",
-        url: "/create_spreadsheets",
+        url: "/create_spreadsheets_v2",
         headers: {
           Authorization: `Bearer ${token}`,
         },
-         params: { id: id }
+         params: { id: id,
+                   sp_id : spreadsheetId}
       };
 
       axios(configuration_create)
       .then((result) => {
 
  
-       console.log("SONO IN makeSizer - sono in result - risultato: "+ result.data); 
+            console.log("SONO IN makeSizer - sono in result - risultato: "+ result.data); 
 
-           setMessage2(result.data.message + " " + result.data.info_cell + " - "+ result.data.url );
+            setMessageResult(result.data.message + " " + result.data.info_cell + " - "+ result.data.url );
 
            setIsLoading(false);   // Hide loading screen 
-
-      // setMessage(result.data);
-
       })
  
       .catch(function (error){
@@ -119,8 +122,8 @@ export default  function CreateSpreadsheets() {
 
        setIsLoading(false);   // Hide loading screen 
 
-      // setMessageError(error.message);
-       setMessageError(error.response.data.message );
+  
+      setMessageError(error.response.data.message );
 
                             if(401 == error.response.status) {
                                 window.location.href = "/";
@@ -134,27 +137,45 @@ export default  function CreateSpreadsheets() {
     return (<>
 
         <div>
-      
             <h3>Make your Size</h3>
-
-
-
         </div>
 
+       
+        <Form onSubmit={(e)=>onSubmit(e)}>
         <Alert key="primary" variant="primary">
-            <p> {message} </p>
+
+            <div>{message_trovato }</div> <br/>
+            <div>{message_trovato1} </div>
+
+             {message_non_trovato1 ? 
+              <div>
+                 Please follow this step (only for new sizer) <br/> <p/>
+                1) Create a new Google Sheet on your G Drive Home, or subdirectory if you prefer, and rename as you like.<br/> 
+                2) Share the document with "mongodbsizer@sizersheet.iam.gserviceaccount.com"    <br/> 
+                3) Copy the spreadshet ID like this: <img src={google_image} />  and paste here.<br/> 
+             
+                
+                <input
+							type="text"
+							placeholder="Spreadsheet ID"
+							name="spreadsheetId"
+						    onChange={(e) => setSpreadsheetId(e.target.value)}
+							value={spreadsheetId}
+							required
+							className={styles.input_google}
+				/>
+                 
+            </div>        
+            : false 
+            }
+
             <hr />
             <p className="mb-0">
-                {message1}
+             
             </p>
         </Alert>
 
-
-        <div>
-            <Form onSubmit={onSubmit}>
-
-
-                <Row>
+        <Row>
                     <Col align="left">
                         <button type="submit" className={styles.green_btn} >Make</button>
                     </Col>
@@ -163,19 +184,18 @@ export default  function CreateSpreadsheets() {
                     </Col>
                 </Row>
 
+     
             </Form>
 
-        </div>
-
-       
 
                     <div align="center">
                         <br/>
                         {isLoading ? <LoadingSpinner /> : false}
 
-                        {message2 &&  <Alert key="success" variant="success">
-                            <p> {message2} </p>
+                        {messageResult &&  <Alert key="success" variant="success">
+                            <p> </p>
                             <hr />
+                            {messageResult}
                             <p className="mb-0">
                             </p>
                         </Alert>}

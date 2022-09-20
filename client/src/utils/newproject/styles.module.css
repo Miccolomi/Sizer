@@ -48,6 +48,19 @@
 	margin: 5px 0;
 	font-size: 14px;
 }
+.input_google {
+	outline: none;
+	border: none;
+
+	width: 400px;
+
+
+	padding: 15px;
+	border-radius: 10px;
+	background-color: #edf5f3;
+	margin: 5px 0;
+	font-size: 14px;
+}
 
 .error_msg {
 	width: 100%;

@@ -40,10 +40,16 @@ app.use(express.json())
 // require database connection 
 const dbConnect = require("./db/dbConnect");
 // execute database connection 
+try{
 dbConnect();
+}
+catch{
 
+  res.json({ message: "Not Connect to MongoDB " });
+
+}
 // Have Node serve the files for our built React app
-console.log("__dirname: " + __dirname);
+// console.log("__dirname: " + __dirname);
 app.use(express.static(path.resolve(__dirname, '../client/build')));
 
 // Handle GET requests to /api route
@@ -749,7 +755,9 @@ app.post("/create_spreadsheets", async (request, response) => {
   const client_secret = "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";
 
   // If modifying these scopes, delete token.json.
+  
   const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
+  
   // The file token.json stores the user's access and refresh tokens, and is
   // created automatically when the authorization flow completes for the first
   // time.
@@ -1240,6 +1248,480 @@ async function updateValues(spreadsheetId, valueInputOption, data, auth) {
 });
 
 
+//requests to the CREATE Google Sheets via API
+app.post("/create_spreadsheets_v2", async (request, response) => {
+
+  console.log("______sono in NODE create_spreadsheets v2 Service Account_____");
+
+ const GCLOUD_PROJECT = "sizersheet" // {project ID of your google project}
+ const GOOGLE_APPLICATION_CREDENTIALS = "sizersheet-serviceAccount.json"    
+ const { google } = require('googleapis')
+ const SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+ const sheets = google.sheets('v4');
+
+
+   // Get user input
+ let myquery = { _id: ObjectId(request.query.id) };
+ let spreadsheetId = "";
+
+//const sheetName = "Sizer_Template" // process.argv[3];
+
+
+
+ const valueInputOption = "USER_ENTERED";
+ const fs = require('fs').promises;
+ const path = require('path');
+ const process = require('process');
+ const { authenticate } = require('@google-cloud/local-auth');
+
+
+ var URL_FILE="";
+
+
+ let exist;
+  
+  const CreaExcel = async () => {
+
+  
+
+    try {
+       // 1) mi autentico
+       const auth = new google.auth.GoogleAuth({ keyFile: GOOGLE_APPLICATION_CREDENTIALS, //the key file
+        //url to spreadsheets API
+        scopes: "https://www.googleapis.com/auth/spreadsheets", 
+    });
+      console.log("_____create_spreadsheets v2 sono autorizzat _____");
+
+      
+        // 2 Auth client Object
+        const authClientObject = await auth.getClient();
+        // 3 Google sheets instance
+        const googleSheetsInstance = google.sheets({ version: "v4", auth: authClientObject });
+        // 4 spreadsheet id
+       // const spreadsheetId = "1S5msECluySB2zFcq-LU1CcRFUeD1ghVHUqe31f9pIC0" //process.argv[2];  //fatto sopra
+
+       // esiste ne DB ?
+       let project_sheet_id = await Project.findOne(myquery);
+       let spreadsheetId_dal_db = project_sheet_id._doc.spreadsheetId;
+  
+       console.log("SpreadsheetId_dal_db =: " + spreadsheetId_dal_db);
+       //Se si lo promuovo a spreadsheetId
+       if(spreadsheetId_dal_db){
+        spreadsheetId = spreadsheetId_dal_db; //quel nel database 
+        console.log("_____create_spreadsheets v2 spreadsheetId= " +spreadsheetId);
+       }
+       else {
+        spreadsheetId = request.query.sp_id  // quello che mi passa utente "1S5msECluySB2zFcq-LU1CcRFUeD1ghVHUqe31f9pIC0" //process.argv[2];
+        spreadsheetId_dal_db = await  Project.findOneAndUpdate( myquery,  { $set: { spreadsheetId: spreadsheetId } , upsert:true }  ); // e lo memorizzo
+        console.log("_____create_spreadsheets v2 spreadsheetId= " +spreadsheetId);
+       }
+
+        // 5 Get metadata about spreadsheet
+        const sheetInfo = await googleSheetsInstance.spreadsheets.get({
+          auth,
+          spreadsheetId,
+       });
+       console.log("_____ create_spreadsheets ho i dati del file " + sheetInfo);
+        //Eventual Read from the spreadsheet
+       //const readData = await googleSheetsInstance.spreadsheets.values.get({
+       //   auth, //auth object
+       //  spreadsheetId, // spreadsheet id
+       //  range: "Sheet1!A:A", //range of cells to read from.
+
+        // 6) prendo i dati del progetto dal db
+    const data = await getProjectData(myquery);
+    console.log("_____ create_spreadsheets ho i dati");
+    // 7)  mi prendo lo spreadsheetId dal DB 
+    // 8) creo il titolo del file
+    let docTitle = data._doc.customer +" - "+data._doc.project ; // forse non serve....
+    console.log("_____ create_spreadsheets docTitle: _____"+data._doc.customer +" - "+data._doc.project );
+    // 9) creo array da scivere sul file
+    const values = await makeArray(data._doc);
+    console.log("_____ create_spreadsheets ho creato array da scrivere: _____");
+    // 10 UPDATE   
+    const resource = {   values    }; // importante lo vuole così
+
+      const update = await googleSheetsInstance.spreadsheets.values.update({
+        auth, //auth object
+        spreadsheetId, //spreadsheet id
+        range: "Sheet1!A1", //sheet name and range of cells
+        valueInputOption: valueInputOption, // The information will be passed according to what the usere passes in as date, number or text
+        resource
+    });
+
+    console.log("_____ create_spreadsheets.... creato !!!: _____");
+    console.log('%d cells updated.', update.data.updatedCells); 
+    console.log('URL: ', update.config.url + URL_FILE);
+    if (!URL_FILE){ // la prima volta non esiste
+      URL_FILE= "see your Google Drive Recent file"
+    }
+
+    //return response.status(200).send({ message:  "Google Sheet name:  \""+docTitle+"\" create Successfully with ", info_cell: update.data.updatedCells+ " updated cells. " ,  url: "Link to Google Sheet: "+ URL_FILE });
+    return response.status(200).send({ message:  "Google Sheet name: create Successfully with ", info_cell: update.data.updatedCells+ " updated cells. " ,  url: "Link to Google Sheet: "+ URL_FILE });
+
+
+  
+     // console.log('create_spreadsheets v2 sono autorizzato + output for getSpreadSheet', JSON.stringify(response.data, null, 2)); // bella risposta!
+  }catch(error) {
+      console.log(error.message, error.stack);
+      return response.status(400).json({ message: error.message })
+    }
+
+  
+  }// fine CreaExcel
+  
+  // Make 
+  CreaExcel();
+
+
+  async function checkIfIdSheetExistonGoogle (auth , my_spreadsheetId) {
+    
+    const sheets = google.sheets('v4');
+
+    const request = {
+      // The spreadsheet to request.
+      spreadsheetId: my_spreadsheetId,  
+
+       // non deve essere nel cestino !!!
+       
+  
+      // The ranges to retrieve from the spreadsheet.
+      ranges: [],  // TODO: Update placeholder value.
+  
+      // True if grid data should be returned.
+      // This parameter is ignored if a field mask was set in the request.
+      includeGridData: false,  // TODO: Update placeholder value.
+  
+      auth: auth,
+    };
+
+    try {
+      const response = (await sheets.spreadsheets.get(request)).data;
+      // TODO: Change code below to process the `response` object:
+    
+        
+        if (response){
+          console.log(JSON.stringify(response, null, 2)); // questa info deve tornare indietro !!!! bello !!!
+          URL_FILE = response.spreadsheetUrl; // mi segno l'url del file da ritornare
+          return true;
+        } 
+        else{
+          return false;
+        }
+
+    } catch (err) {
+      console.log(err.message);
+      if (err.code == "ETIMEDOUT"){
+        console.log(err.message);
+        return response.status(400).send( "TimeOut Error :" +  err.message );
+      }
+      if (err.code == "400"){
+        console.log(err.message);
+        return response.status(400).send( "Generic Error :" +  err.message );
+      }
+      return false; // vuol dire che non esiste !!!
+    }
+  
+  
+  };
+   
+async function checkIfIdSheetExistonDB (myquery) {
+
+  try {
+    //  const result =  await Project.find(query, options);
+    const result = await Project.findOne(myquery);
+  
+    console.log("______ CheckIfSheetExist trovo questi id_____: " + result.doc.spreadsheetId);
+    
+    if(result.doc.spreadsheetId){
+      return result.doc.spreadsheetId;
+    }
+  
+    return false; 
+  }
+  catch (err) {
+    console.log('_______SONO IN CheckIfSheetExist ERRROR__________', err)
+    response.status(400).json({ message: err.message })
+  
+  }
+
+
+};
+
+async function makeArray (document) {
+
+    //console.log("Array --> customer" + document.customer);
+
+    const _values = [
+      // Cell values ...
+      ["-- PROJECT --", "","","","SHARDED CLUSTER","0","(put 1 or 0 for yes or no)"],
+      ["Customer:", document.customer, "","","REPLICA SETS","1", "(put 1 or 0 for yes or no)"],
+      ["Project:", document.project],
+      ["Description:", document.contesto],
+      ["Use Case:", document.usecase],
+      ["-- ARCHITECTURE --"],
+      ["Infrastructure:", document.projectarchitecture,     "", "", "-- STORAGE SIZE --" ],
+      ["Type:"                     , document.Architecture, "", "", "Storage"  , "MB"          ,"GB"      ,"TB"],
+      ["Number of Production Site:", document.PRSite      , "", "", "Data Size","=B14*B21/1024","=F9/1024","=G9/1024"],
+      ["Disaster Recovery Site:", document.DRSite         ,"",  "", "Index Size","=B14*B18*F19/1024/1024", "=F10/1024","=G10/1024"  ],
+      ["Storage Type:", document.PRStorage                ,"" , "", "Oplog","=(B25*60*60*24*B21/1024)+(B27*60*60*24*B21*0.02/1024)+(B31*60*60*24*10/1024)", "=F11/1024","=G11/1024"  ],
+      ["-- DATA --"                                 ,""   ,"" ,"",  "Buffer", "=SUM(F10:F11)*0.1", "=F12/1024","=G12/1024" ],
+      ["Initial data or data to import:", document.initial_data , "" ,"", "-- Total Storage Size --", "=SUM(F9:F12)" , "=F13/1024","=G13/1024" ],
+      ["Total Number of NEW Documents:", document.documents     , "" ,"", "-- Total Storage Size on disk --", "=F13/3.14" , "=F14/1024","=G14/1024" ],
+      ["Indication of growth:", document.growth],
+      ["Growth Details:", document.growthspec],
+      ["Average Number of Fields per documents:", document.average_fields_documents],
+      ["Number of Index per document:", document.index_size],
+      ["",                                   ,""                                    ,"", "--- INDEX ENTRY SIZE: ---", "12"],
+      ["Number of documents in working set:", document.working_set                  ,"" , "", "-- # Operations / Second --"],
+      ["Average Sizing of single document:", document.average_sizing_documents      ,"" ,"", "Find" ,"=B29/24/60/60" , "ops/sec"],
+      ["Document Retention:", document.document_retention                           ,"" ,"", "Insert" ,"=B25/24/60/60" , "ops/sec"],
+      ["Document Retention Period:", document.document_retention_period             , "" ,"", "Update" ,"=B27/24/60/60" , "ops/sec"],
+      ["-- CRUD --"                                                            , "" , "" ,"", "Delete" ,"=B31/24/60/60" , "ops/sec"],
+      ["Total Insert:", document.total_insert],
+      ["Insert per:", document.insert_per],
+      ["Total Update:", document.total_update],
+      ["Update per:", document.update_per],
+      ["Total Query:", document.total_query   , "", "", "-- DISK SPEED --" ],
+      ["Query per:", document.query_per        , "", "", "IOPS" , "=SUM(F21:F24)/20" ],
+      ["Total Delete:", document.total_delete],
+      ["Delete per:",  document.delete_per ],
+      ["Concurrent write:", document.concurrent_write],
+      ["Concurrent writen details:", document.concurrent_write_details   , "", "", "-- RAM --"                               ,"DATA SIZE FOR TRANSACTIONAL/OLTP" , "0.05", "DATA SIZE FOR ANALYTICAL/OLAP" , "=(3/90)*F10"],
+      ["Concurrent read:", document.concurrent_read                      , "", "", ""                                        ,"MB"                             , "GB"                                        , "TB"  ],
+      ["Concurrent read details:", document.concurrent_read_details      , "", "", "Working Set Analytical"                  ,"=F10*I34"                       ,"=F36/1024"                                  ,"=G36/1024"  ],
+      [""                , ""                                            , "", "", "Working Set Transactional"               ,"=F10*G34"                        ,"=F37/1024"                                  ,"=G37/1024"],
+      [""                , ""                                            , "", ""],
+      [""                , ""                                            , "", ""],
+      [""                , ""                                            , "", "",""                                             ,"MB"              ,"GB",          "TB" ],
+      [""                , ""                                            , "", "", "Required RAM Analytical"                     ,"=(F36+F10)*2"    ,"=F41/1024" ,  "=G41/1024"],
+      [""                , ""                                            , "", "", "Required RAM Transactional"                  ,"=(F37+F10)*2"    ,"=F42/1024" ,  "=G42/1024"],
+      [""                , ""                                            , "", "", "Working Set Transactional"               ,"=F10*G34"                        ,"=F37/1024"                                  ,"=G37/1024"],
+      [""                , ""                                            , "", ""],
+      [""                , ""                                            , "", ""], 
+      [""                , ""                                            , "" ,"", "-- CPU --" ],
+      [""                , ""                                            , "", "", "Operations per Second CPU"               ,"15000"],
+      [""                , ""                                            , "", "", "Weighted Operations"               ,"=(F21+F22*1.3+F24*0.3+F23/2*1.3)","ops/sec"],
+      [""                , ""                                            , "", "", "Sharding Overhead"               ,"=IF(F1=1,F48*0.3,0)"],
+      [""                , ""                                            , "", "", "Replication Overhead"               ,"=IF(F2=1,F48*0.3,0)"],
+      [""                , ""                                            ,"" ,"",  "# CPUs", "=SUM(F48:F50)/F47"],
+      [""                , ""                                            , "", ""],
+      [""                , ""                                            , "", ""], 
+      [""                , ""                                            , "" ,"", "SHARDS PER DISK","=((F13/1024/1024)/I54)", "", "LIMIT ON DB SIZE", "1","TB" ],
+      [""                , ""                                            , "" ,"", "SHARDS PER MEMORY","=(F42/1024)/I55"     , "", "LIMIT ON RAM SIZE", "16","GB" ]
+    ];
+ 
+    return _values;
+    
+    };
+
+
+  async function getProjectData (myquery) {
+
+try {
+ 
+  const result = await Project.findOne(myquery);
+
+  return result;
+}
+catch (err) {
+  console.log('_______SONO IN PROJECT UPDATE ERRROR__________', err)
+  response.status(400).json({ message: err.message })
+
+}
+
+};
+
+
+  /**
+   * Reads previously authorized credentials from the save file.
+   *
+   * @return {Promise<OAuth2Client|null>}
+   */
+async function loadSavedCredentialsIfExist() {
+    try {
+      const content = await fs.readFile(TOKEN_PATH);
+      const credentials = JSON.parse(content);
+      return google.auth.fromJSON(credentials);
+    } catch (err) {
+      return null;
+    }
+  }
+
+  /**
+   * Serializes credentials to a file comptible with GoogleAUth.fromJSON.
+   *
+   * @param {OAuth2Client} client
+   * @return {Promise<void>}
+   */
+async function saveCredentials(client) {
+    const content = await fs.readFile(CREDENTIALS_PATH);
+    const keys = JSON.parse(content);
+    const key = keys.installed || keys.web;
+    const payload = JSON.stringify({
+      type: 'authorized_user',
+      client_id: key.client_id,
+      client_secret: key.client_secret,
+      refresh_token: client.credentials.refresh_token,
+    });
+    await fs.writeFile(TOKEN_PATH, payload);
+  }
+
+  /**
+   * Load or request or authorization to call APIs.
+   *
+   */
+async function authorize() {
+    let client = await loadSavedCredentialsIfExist();
+    if (client) {
+      return client;
+    }
+    client = await authenticate({
+      scopes: SCOPES,
+      keyfilePath: CREDENTIALS_PATH,
+    });
+    if (client.credentials) {
+      await saveCredentials(client);
+    }
+    return client;
+  }
+
+  /**
+   * Prints the names and majors of students in a sample spreadsheet:
+   * @see https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
+   * @param {google.auth.OAuth2} auth The authenticated Google OAuth client.
+   */
+async function listMajors(auth) {
+    const sheets = google.sheets({ version: 'v4', auth });
+    const res = await sheets.spreadsheets.values.get({
+      spreadsheetId: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
+      range: 'Class Data!A2:E',
+    });
+    const rows = res.data.values;
+    if (!rows || rows.length === 0) {
+      console.log('No data found.');
+      return;
+    }
+    console.log('Name, Major:');
+    rows.forEach((row) => {
+      // Print columns A and E, which correspond to indices 0 and 4.
+      console.log(`${row[0]}, ${row[4]}`);
+    });
+  }
+
+
+  /**
+ *                                                                          Create a google spreadsheet
+ * @param {string} title Spreadsheets title
+ * @return {string} Created spreadsheets ID
+ */
+async function create(auth, docTitle) {
+    // const {GoogleAuth} = require('google-auth-library');
+    // const {google} = require('googleapis');
+
+    // const auth = new GoogleAuth(
+    //     {scopes: 'https://www.googleapis.com/auth/spreadsheet'});
+    let title = docTitle;
+
+    const service = google.sheets({ version: 'v4', auth });
+    const resource = {
+      properties: {
+        title
+      },
+    };
+    try {
+      const spreadsheet = await service.spreadsheets.create({
+        resource,
+        fields: 'spreadsheetId',
+      });
+      console.log(`Spreadsheet ID CREATO !!!!!!!!!!!!!!!!!!!!: ${spreadsheet.data.spreadsheetId}`);
+
+      return spreadsheet.data.spreadsheetId;
+      //updateValues(spreadsheet.data.spreadsheetId, valueInputOption ,_values,auth);
+
+    } catch (err) {
+      console.log(err);
+      console.log(err.message);
+      return response.status(400).json({ message: err.message })
+      
+    }
+  };                                                         // fine create
+
+async function addspreadsheetIdId(id) { //lo aggiungo a Mongo
+
+   
+    try {
+     
+      const result = await Project.findOneAndUpdate( myquery,  { $set: { spreadsheetId: id } , upsert:true }  );
+    
+      if(result){
+        return true;
+      }
+    
+      return false; 
+    }
+    catch (err) {
+      console.log('_______SONO IN addspreadsheetIdId ERRROR__________', err)
+      return response.status(400).json({ message: err.message })
+    
+    }
+
+
+  
+
+  };
+
+  
+
+  /**
+   * Updates values in a Spreadsheet.
+   * @param {string} spreadsheetId The spreadsheet ID.
+   * @param {string} range The range of values to update.
+   * @param {object} valueInputOption Value update options.
+   * @param {(string[])[]} _values A 2d array of values to update.
+   * @return {obj} spreadsheet information
+   */
+async function updateValues(spreadsheetId, valueInputOption, data, auth) {
+    // const {GoogleAuth} = require('google-auth-library');
+    // const {google} = require('googleapis');
+
+    // const auth = new GoogleAuth({
+    //   scopes: 'https://www.googleapis.com/auth/spreadsheet',
+    // });
+    
+    //const range = "A1:D5";
+    const range = "A1";
+    let values = data;
+
+    const resource = {
+      values,
+    };
+
+    try {
+
+      await googleSheetsInstance.spreadsheets.values.append({
+        auth, //auth object
+        spreadsheetId, //spreadsheet id
+        range: range, //sheet name and range of cells
+        valueInputOption: valueInputOption, // The information will be passed according to what the usere passes in as date, number or text
+        resource,
+    });
+
+
+      console.log('%d cells updated.', result.data.updatedCells);
+      return result;
+    } catch (err) {
+      // TODO (Developer) - Handle exception
+      //throw err;
+      console.log(err);
+      response.status(400).json({ message: err.message })
+    }
+  }
+
+
+
+
+});
 
 
 

@@ -5,7 +5,7 @@ require("dotenv").config({ path: "./server/config.env" });
 async function dbConnect() { 
 
     // use mongoose to connect to database on mongoDB -  using the MONGODB_URI (connection string)
-  mongoose
+  await mongoose
   .connect(
     process.env.MONGODB_URI,
     {
