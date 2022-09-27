@@ -261,7 +261,7 @@ useEffect(() => {
     <Row>
 
     <Col>
-      <Form.Text className="text-muted">  If you save, email notification are sent to Customer  </Form.Text>
+     {/* <Form.Text className="text-muted">  If you save, email notification are sent to Customer  </Form.Text> */}
       </Col>
       <Col>
       <Form.Text className="text-muted"> </Form.Text>
