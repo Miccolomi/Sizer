@@ -535,7 +535,7 @@ async function onSubmit(e) {
       <Col xs={3}>  
                 <Form.Text className="text-muted">Info: </Form.Text>
                 <br/>
-                <Form.Text className="text-muted">Percentual documents growth:  </Form.Text>
+                <Form.Text className="text-muted">Percentage documents growth:  </Form.Text>
       </Col>
       <Col xs={4}>  
       <Form.Label>Growth Details:</Form.Label>
@@ -693,7 +693,7 @@ async function onSubmit(e) {
                     <Form.Control type="text"  value={form.concurrent_write  || ''} onChange={(e) => updateForm({ concurrent_write: e.target.value })}/>
                   </InputGroup> 
 
-                  <Form.Label>Concurrent writen details:</Form.Label>
+                  <Form.Label>Concurrent written details:</Form.Label>
                   <Form.Group  controlId="concurrent_write_details"> 
                       <Form.Check  type="radio" inline label="Second"     value={'second'}      checked={form.concurrent_write_details === "second" }    name="concurrent_write_details"  onChange={(e) => updateForm({ concurrent_write_details: e.target.value })} />
                       <Form.Check  type="radio" inline label="Minute" value={'minute'}  checked={form.concurrent_write_details === "minute"}       name="concurrent_write_details"  onChange={(e) => updateForm({ concurrent_write_details: e.target.value })}/>

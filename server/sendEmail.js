@@ -30,15 +30,19 @@ const sendEmail = async (email, subject, payload, template) => {
     // Send email
     transporter.sendMail(options(), (error, info) => {
       if (error) {
+       
+        console.log("errore nel invio mail !!!!!!"+error ); 
         return error;
+
       } else {
-        console.log("___EMAIL CAMBIO PASSOWORD INVIATA___"); 
+        console.log("___EMAIL INVIATA___"); 
         return res.status(200).json({
           success: true,
         });
       }
     });
   } catch (error) {
+    console.log("errore in mail catch !!!!!!"+error ); 
     return error;
   }
 };

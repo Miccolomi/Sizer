@@ -225,19 +225,16 @@ app.post("/info_mongo", auth, async (request, response) => {
   const { project } = request.body;
   const { contesto } = request.body;
   let { email } = request.body;
+  const { sendemail } = request.body;
   const { usecase } = request.body;
   const { user_logon } = request.body;
   const { projectarchitecture } = request.body;
   // Validate user input
 
-
-
   if (!customer || !project || !contesto || !email || !usecase || !user_logon || !projectarchitecture) {
     console.log("______usecase == 0 NON VALIDO !!!!_____");
     return response.status(400).send({ message: "All input are required" });
   };
-
-  //
 
   console.log("______FINITO CONTROLLO PARAMETRI_____");
 
@@ -265,6 +262,7 @@ app.post("/info_mongo", auth, async (request, response) => {
   // save the new user
   await new_project.save().then((result) => {
 
+   
     //Invio mail al cliente
     const clientURL = process.env.CLIENT_URL;
     console.log("______COSTRUZIONE URL PER LA MAIL_____" + clientURL);
@@ -272,7 +270,7 @@ app.post("/info_mongo", auth, async (request, response) => {
     const link = `${clientURL}`;
     console.log("______COSTRUZIONE LINK PER LA MAIL_____" + link);
 
-    const email_for_send = process.env.EMAIL_DEV;
+    const email_for_send = process.env.EMAIL_DEV; // se sono in sviluppo prendo questa altrimenti prende quella reale !!!!!!!!!!!
 
     if (email_for_send){
       email = email_for_send; 
@@ -280,8 +278,6 @@ app.post("/info_mongo", auth, async (request, response) => {
     else { // quindi sono in produzione e prendo la vera mail
       email = email;
     }
-
-
     
     if (!userexist) {
    
@@ -295,8 +291,9 @@ app.post("/info_mongo", auth, async (request, response) => {
 
     // save the new user
     user.save()
-
     console.log("______SALVO UTENTE_____");
+
+    if(sendemail){
 
     sendEmail(
       email,
@@ -312,12 +309,14 @@ app.post("/info_mongo", auth, async (request, response) => {
 
     console.log("______EMAIL A NUOVO UTENTE INVIATA_____");
 
+    }
 
-    response.status(201).send({ message: "Project Created Successfully and Email send to customer !", result});
+    response.status(201).send({ message: "Project Created Successfully !", result});
 
     }
     else{ // quindi cliente è gia registrato e non lo devo salvare 2 volte..
 
+      if(sendemail){
       sendEmail(
         email,
         "Welcome back to MongoDB Sizer",
@@ -330,7 +329,7 @@ app.post("/info_mongo", auth, async (request, response) => {
       );
   
       console.log("______EMAIL A UTENTE --ESISTENTE-- INVIATA_____");
-  
+      }
       response.status(201).send({ message: "Project Created Successfully and Email send to customer !", result });
 
     }
@@ -1013,7 +1012,7 @@ async function makeArray (document) {
       ["Total Delete:", document.total_delete],
       ["Delete per:",  document.delete_per ],
       ["Concurrent write:", document.concurrent_write],
-      ["Concurrent writen details:", document.concurrent_write_details   , "", "", "-- RAM --"                               ,"Data size for operational/OLTP" , "0,05", "Data size for for Analytical/OLAP" , "=(3/90)*F10"],
+      ["Concurrent written details:", document.concurrent_write_details   , "", "", "-- RAM --"                               ,"Data size for operational/OLTP" , "0,05", "Data size for for Analytical/OLAP" , "=(3/90)*F10"],
       ["Concurrent read:", document.concurrent_read                      , "", "", ""                                        ,"MB"                             , "GB"                                        , "TB"  ],
       ["Concurrent read details:", document.concurrent_read_details      , "", "", "Working Set Analytical"                  ,"=F10*I34"                       ,"=F36/1024"                                  ,"=G36/1024"  ],
       [""                , ""                                            , "", "", "Working Set Transactional"               ,"=F10*G34"                        ,"=F37/1024"                                  ,"=G37/1024"],
@@ -1481,7 +1480,7 @@ async function makeArray (document) {
       ["Total Delete:", document.total_delete],
       ["Delete per:",  document.delete_per ],
       ["Concurrent write:", document.concurrent_write],
-      ["Concurrent writen details:", document.concurrent_write_details   , "", "", "-- RAM --"                               ,"DATA SIZE" , "0.05", , ],
+      ["Concurrent written details:", document.concurrent_write_details   , "", "", "-- RAM --"                               ,"DATA SIZE" , "0.05", , ],
       ["Concurrent read:", document.concurrent_read                      , "", "", ""                                        ,"MB"                             , "GB"                                        , "TB"  ],
       ["Concurrent read details:", document.concurrent_read_details      , "", "", ""                  ,""                       ,""                                  ,""  ],
       [""                , ""                                            , "", "", "Working Set"               ,"=(F9*G34)+F10"                        ,"=F37/1024"                                  ,"=G37/1024"],

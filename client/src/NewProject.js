@@ -23,8 +23,22 @@ export default function NewProject() {
   const [project, setProject] = useState(null);
   const [contesto, setContesto] = useState(null);
   const [email, setEmail] = useState(null);
+  const [sendemail, setSendEmail] = useState(false);
   const [usecase, setUseCase] = useState(null);
   const [projectarchitecture, setProjectArchitecture] = useState(null);
+
+  // per lo switch
+  const SendEmail = ({sendemail, onChange}) => (
+    <div>
+      <input
+        type="checkbox"
+        className="toggle-switch-checkbox"
+        checked={sendemail}
+        onChange={e => onChange(e.target.checked)}
+      />
+    </div>
+  );
+  // fine switch
   
   // fine campi form
 
@@ -50,6 +64,9 @@ useEffect(() => {
 
   const handleSubmit = (e) => {
 
+ 
+
+
   
        // e.preventDefault();
        // e.stopPropagation();
@@ -58,6 +75,7 @@ useEffect(() => {
       setMessage(null); 
 
       const form = e.currentTarget;
+
       if (form.checkValidity() === false) {
         e.preventDefault();
         e.stopPropagation();
@@ -83,6 +101,7 @@ useEffect(() => {
         contesto,
         usecase,
         email,
+        sendemail,
         user_logon,
         projectarchitecture
        
@@ -158,6 +177,13 @@ useEffect(() => {
             <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
             <Form.Control.Feedback type="invalid">Please insert valid Email </Form.Control.Feedback>
       </Col>
+      <Row>
+      <Col  xs={9}></Col>
+      <Col xs={3}> 
+      <SendEmail  id="sendemail" checked={sendemail} onChange={setSendEmail} />
+      <label htmlFor="sendemail">Send email to Customer ?</label> 
+      </Col>
+      </Row>
       </Row>
       <br/><br/>
       <Row>
