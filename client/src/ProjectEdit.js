@@ -193,7 +193,7 @@ function renderAtlas() {
       <Col  xs={3}>
 
         <Form.Group className="mb-3" controlId="PRSite">
-        <Form.Label>Number of Production Site:</Form.Label>
+        <Form.Label>How many data centers do you have?</Form.Label>
         <Form.Control type="text"  value={form.PRSite || ''} onChange={(e) => updateForm({ PRSite: e.target.value })} />
        
         </Form.Group>

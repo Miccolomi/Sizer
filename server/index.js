@@ -1458,7 +1458,7 @@ async function makeArray (document) {
       ["Number of Production Site:", document.PRSite      , "", "", "Data Size","=(B13+B14)*B21/1024","=F9/1024","=G9/1024"],
       ["Disaster Recovery Site:", document.DRSite         ,"",  "", "Index Size","=(B13+B14)*B18*F19/1024/1024", "=F10/1024","=G10/1024"  ],
       ["Storage Type:", document.PRStorage                ,"" , "", "Oplog","=(B25*60*60*24*B21/1024)+(B27*60*60*24*B21*0.02/1024)+(B31*60*60*24*10/1024)", "=F11/1024","=G11/1024"  ],
-      ["-- DATA --"                                 ,""   ,"" ,"",  "Buffer", "=SUM(F10:F11)*0.1", "=F12/1024","=G12/1024" ],
+      ["-- DATA --"                                 ,""   ,"" ,"",  "Buffer", "=SUM(F9:F11)*0.1", "=F12/1024","=G12/1024" ],
       ["Initial data or data to import:", document.initial_data , "" ,"", "-- Total Storage Size --", "=SUM(F9:F12)" , "=F13/1024","=G13/1024" ],
       ["Total Number of NEW Documents:", document.documents     , "" ,"", "-- Total Storage Size on disk --", "=F13/3.14" , "=F14/1024","=G14/1024" ],
       ["Indication of growth:", document.growth],
@@ -1498,7 +1498,7 @@ async function makeArray (document) {
       [""                , ""                                            , "", ""],
       [""                , ""                                            , "", ""], 
       [""                , ""                                            , "" ,"", "SHARDS PER DISK","=((F13/1024/1024)/I51)", "", "LIMIT ON DB SIZE", "1","TB" ],
-      [""                , ""                                            , "" ,"", "SHARDS PER MEMORY","=(F42/1024)/I52"     , "", "LIMIT ON RAM SIZE", "16","GB" ]
+      [""                , ""                                            , "" ,"", "SHARDS PER MEMORY","=(F40/1024)/I52"     , "", "LIMIT ON RAM SIZE", "16","GB" ]
     ];
  
     return _values;
