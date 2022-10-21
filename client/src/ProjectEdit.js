@@ -730,7 +730,7 @@ async function onSubmit(e) {
         <Col xs={5}>   
       <Form.Text className="text-primary">Info: </Form.Text>
                 <br/>
-                <Form.Text className="text-muted">insert ....  </Form.Text>
+                <Form.Text className="text-muted">Total query from/systems or user</Form.Text>
       </Col>
       <Col xs={4}>  
                   <Form.Label>Query per:</Form.Label>
