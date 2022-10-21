@@ -199,7 +199,7 @@ function renderAtlas() {
         </Form.Group>
       </Col>
       <Col xs={6}>
-      <Form.Text className="text-muted">Info: </Form.Text>
+      <Form.Text className="text-primary">Info: </Form.Text>
       <br/>
       <Form.Text className="text-muted">Insert 1, if you have only one DC -  Insert 2, if you have two datacenter on high availability  </Form.Text>
       </Col>
@@ -217,7 +217,7 @@ function renderAtlas() {
           </Form.Group>
   </Col>
   <Col xs={6}>
-      <Form.Text className="text-muted">Info: </Form.Text>
+      <Form.Text className="text-primary">Info: </Form.Text>
       <br/>
       <Form.Text className="text-muted">Yes if you have third datacenter for DR </Form.Text>
   </Col>
@@ -236,7 +236,7 @@ function renderAtlas() {
         </Form.Group>
       </Col>
       <Col xs={6}>
-      <Form.Text className="text-muted">Info: </Form.Text>
+      <Form.Text className="text-primary">Info: </Form.Text>
       <br/>
       <Form.Text className="text-muted">Which kind of storage type you have ? </Form.Text>
   </Col>
@@ -255,7 +255,7 @@ function renderAtlas() {
   </Form.Group>
   </Col>
   <Col xs={6}>
-      <Form.Text className="text-muted">Info: </Form.Text>
+      <Form.Text className="text-primary">Info: </Form.Text>
       <br/>
       <Form.Text className="text-muted"> What type of architecture you used today ?</Form.Text>
   </Col>
@@ -505,35 +505,37 @@ async function onSubmit(e) {
                     <Form.Control type="text"  value={form.initial_data  || ''} onChange={(e) => updateForm({ initial_data: e.target.value })}/>
                   </Form.Group>   
       </Col>
-      <Col xs={6}>  
-                <Form.Text className="text-muted">Info: </Form.Text>
+      <Col xs={9}>  
+                <Form.Text className="text-primary">Info: </Form.Text>
                 <br/>
-                <Form.Text className="text-muted">Insert number of documents that you want to import when project start  </Form.Text>
+                <Form.Text className="text-muted">Insert number of documents from MongoDB or records from RDMBS, that you want to import at day 1.</Form.Text>
+                <Form.Text className="text-muted">A record in a MongoDB collection and the basic unit of data in MongoDB. Documents are analogous to JSON objects but exist in the database in a more type-rich format known as BSON.</Form.Text>
       </Col>
   </Row>          
   <Row>
       <Col  xs={3}>
                   <Form.Group className="mb-3" controlId="documents">
-                    <Form.Label>Total Number of NEW Documents:</Form.Label>
+                    <Form.Label>Total of new documents for years:</Form.Label>
                     <Form.Control type="text"  value={form.documents  || ''} onChange={(e) => updateForm({ documents: e.target.value })}/>
                   </Form.Group>              
       </Col> 
       <Col xs={6}>  
-                <Form.Text className="text-muted">Info: </Form.Text>
+                <Form.Text className="text-primary">Info: </Form.Text>
                 <br/>
-                <Form.Text className="text-muted">Insert number of New documents  </Form.Text>
+                <Form.Text className="text-muted">Totale number of new documents for years</Form.Text>
       </Col>
   </Row>
+
   <Row>
       <Col  xs={3}>         
-                  <Form.Label>Indication of growth:</Form.Label>
+                  <Form.Label>Expected growth:</Form.Label>
                   <InputGroup className="mb-3">
                     <Form.Control type="text"  value={form.growth  || ''} onChange={(e) => updateForm({ growth: e.target.value })}/>
                     <InputGroup.Text>%</InputGroup.Text>
                   </InputGroup> 
                   </Col> 
       <Col xs={3}>  
-                <Form.Text className="text-muted">Info: </Form.Text>
+                <Form.Text className="text-primary">Info: </Form.Text>
                 <br/>
                 <Form.Text className="text-muted">Percentage documents growth:  </Form.Text>
       </Col>
@@ -546,6 +548,8 @@ async function onSubmit(e) {
                   </Form.Group>
       </Col>
   </Row>
+
+
   <Row>
       <Col  xs={3}>
                   <Form.Group className="mb-3" controlId="average_fields_documents">
@@ -554,9 +558,9 @@ async function onSubmit(e) {
                   </Form.Group>   
        </Col> 
       <Col xs={6}>  
-                <Form.Text className="text-muted">Info: </Form.Text>
+                <Form.Text className="text-primary">Info: </Form.Text>
                 <br/>
-                <Form.Text className="text-muted">How many fields contain each document  </Form.Text>
+                <Form.Text className="text-muted">How many fields contain each document, e.g. 50 fields  </Form.Text>
       </Col>
   </Row>
   <Row>
@@ -567,14 +571,14 @@ async function onSubmit(e) {
                   </Form.Group> 
         </Col> 
       <Col xs={6}>  
-                <Form.Text className="text-muted">Info: </Form.Text>
+                <Form.Text className="text-primary">Info: </Form.Text>
                 <br/>
-                <Form.Text className="text-muted">How many index have the document </Form.Text>
+                <Form.Text className="text-muted">How many index the document have </Form.Text>
       </Col>
   </Row>
   <Row>
       <Col  xs={3}>
-                 <Form.Label className="text-primary">Number of documents in working set:</Form.Label>
+                 <Form.Label>Number of documents in working set:</Form.Label>
                  <Form.Group className="mb-3" controlId="working_set">
                    <InputGroup className="mb-3">
                      <Form.Control type="text" value={form.working_set || ''} onChange={(e) => updateForm({ working_set: e.target.value })} />
@@ -582,11 +586,11 @@ async function onSubmit(e) {
                    </InputGroup>
                  </Form.Group> 
         </Col> 
-      <Col xs={7}>  
+      <Col xs={9}>  
                 <Form.Text className="text-primary">Info: </Form.Text>
                 <br/>
-                <Form.Text className="text-muted">“Working set” is basically the amount of data and indexes that will be active/in use by your system at any given time. </Form.Text>
-             {/*    <Form.Text className="text-muted">The key point is to ask yourself: do I have enough RAM for my working set? If the answer is: “I don’t know”, then get yourself to the position of knowing.</Form.Text> */}
+                <Form.Text className="text-muted">Working set is basically the amount of data and indexes that will be active/in use by your system at any given time. </Form.Text>
+                <Form.Text className="text-muted">Working set or Hot Data enable fast access becose documents are temporary stored in RAM while cold data use disk storage.</Form.Text>
       </Col>
   </Row>
              <Row>
@@ -601,9 +605,9 @@ async function onSubmit(e) {
                  </Form.Group>
                </Col>
                <Col xs={6}>
-                 <Form.Text className="text-muted">Info: </Form.Text>
+                 <Form.Text className="text-primary">Info: </Form.Text>
                  <br />
-                 <Form.Text className="text-muted">Haverage Sizie of document in KB </Form.Text>
+                 <Form.Text className="text-muted">Average document size in KB </Form.Text>
                </Col>
              </Row>
              
@@ -615,12 +619,12 @@ async function onSubmit(e) {
                   </InputGroup> 
               </Col>
               <Col xs={3}>
-                 <Form.Text className="text-muted">Info: </Form.Text>
+                 <Form.Text className="text-primary">Info: </Form.Text>
                  <br />
-                 <Form.Text className="text-muted">delete or move documents at a specific time </Form.Text>
+                 <Form.Text className="text-muted">Delete or move documents at specific time </Form.Text>
                </Col>
                <Col xs={4}>
-               <Form.Label>Document Retention Period:</Form.Label>
+               <Form.Label>Retention Period:</Form.Label>
                   <Form.Group  controlId="document_retention_period"> 
                       <Form.Check  type="radio" inline label="Day"     value={'day'}      checked={form.document_retention_period === "day" }    name="document_retention_period"  onChange={(e) => updateForm({ document_retention_period: e.target.value })} />
                       <Form.Check  type="radio" inline label="Month"   value={'month'}    checked={form.document_retention_period === "month"}   name="document_retention_period"  onChange={(e) => updateForm({ document_retention_period: e.target.value })}/>
@@ -640,71 +644,139 @@ async function onSubmit(e) {
 
       <Tab eventKey="crud" title="CRUD">
 
-                  <Form.Label>Total Insert:</Form.Label>
+
+
+
+                 
+
+
+  <Row>
+      <Col  xs={3}>         
+              <Form.Label>Total Insert:</Form.Label>
                   <InputGroup className="mb-3">
                     <Form.Control type="text"  value={form.total_insert  || ''} onChange={(e) => updateForm({ total_insert: e.target.value })}/>
                   </InputGroup> 
-
-                  <Form.Label>Insert per:</Form.Label>
+                  </Col> 
+      <Col xs={5}>  
+                <Form.Text className="text-primary">Info: </Form.Text>
+                <br/>
+                <Form.Text className="text-muted">How many inserts your application generates</Form.Text>
+      </Col>
+      <Col xs={4}>  
+      
+         <Form.Label>Insert per:</Form.Label>
                   <Form.Group  controlId="insert_per"> 
                       <Form.Check  type="radio" inline label="second" value={'second'}  checked={form.insert_per === "second" } name="insert_per"  onChange={(e) => updateForm({ insert_per: e.target.value })} />
                       <Form.Check  type="radio" inline label="minute" value={'minute'}  checked={form.insert_per === "minute"}  name="insert_per"  onChange={(e) => updateForm({ insert_per: e.target.value })}/>
                       <Form.Check  type="radio" inline label="day"    value={'day'}     checked={form.insert_per === "day" }    name="insert_per"  onChange={(e) => updateForm({ insert_per: e.target.value })} />
                   </Form.Group>
+      </Col>
+  </Row>
 
+
+
+
+  <Row>
+      <Col  xs={3}>      
                   <Form.Label>Total Update:</Form.Label>
                   <InputGroup className="mb-3">
                     <Form.Control type="text"  value={form.total_update  || ''} onChange={(e) => updateForm({ total_update: e.target.value })}/>
                   </InputGroup> 
-
+      </Col> 
+      <Col xs={5}>  
+      <Form.Text className="text-primary">Info: </Form.Text>
+                <br/>
+                <Form.Text className="text-muted">How many update your application generates</Form.Text>
+      </Col>
+      <Col xs={4}>  
                   <Form.Label>Update per:</Form.Label>
                   <Form.Group  controlId="update_per"> 
                       <Form.Check  type="radio" inline label="second" value={'second'}  checked={form.update_per === "second" } name="update_per"  onChange={(e) => updateForm({ update_per: e.target.value })} />
                       <Form.Check  type="radio" inline label="minute" value={'minute'}  checked={form.update_per === "minute"}  name="update_per"  onChange={(e) => updateForm({ update_per: e.target.value })}/>
                       <Form.Check  type="radio" inline label="day"    value={'day'}     checked={form.update_per === "day" }    name="update_per"  onChange={(e) => updateForm({ update_per: e.target.value })} />
                   </Form.Group>
+          </Col>
+  </Row>
 
-                  <Form.Label>Total Query:</Form.Label>
-                  <InputGroup className="mb-3">
-                    <Form.Control type="text"  value={form.total_query  || ''} onChange={(e) => updateForm({ total_query: e.target.value })}/>
-                  </InputGroup> 
-
-                  <Form.Label>Query per:</Form.Label>
-                  <Form.Group  controlId="query_per"> 
-                      <Form.Check  type="radio" inline label="second" value={'second'}  checked={form.query_per === "second" } name="query_per"  onChange={(e) => updateForm({ query_per: e.target.value })} />
-                      <Form.Check  type="radio" inline label="minute" value={'minute'}  checked={form.query_per === "minute"}  name="query_per"  onChange={(e) => updateForm({ query_per: e.target.value })}/>
-                      <Form.Check  type="radio" inline label="day"    value={'day'}     checked={form.query_per === "day" }    name="query_per"  onChange={(e) => updateForm({ query_per: e.target.value })} />
-                  </Form.Group>
-
+  <Row>
+      <Col  xs={3}>                      
                   <Form.Label>Total Delete:</Form.Label>
                   <InputGroup className="mb-3">
                     <Form.Control type="text"  value={form.total_delete  || ''} onChange={(e) => updateForm({ total_delete: e.target.value })}/>
                   </InputGroup> 
-
+                  </Col>     
+          <Col xs={5}>  
+      <Form.Text className="text-primary">Info: </Form.Text>
+                <br/>
+                <Form.Text className="text-muted">How many delete your application generates</Form.Text>
+      </Col>
+      <Col xs={4}>  
                   <Form.Label>Delete per:</Form.Label>
                   <Form.Group  controlId="query_per"> 
                       <Form.Check  type="radio" inline label="second" value={'second'}  checked={form.delete_per === "second" } name="delete_per"  onChange={(e) => updateForm({ delete_per: e.target.value })} />
                       <Form.Check  type="radio" inline label="minute" value={'minute'}  checked={form.delete_per === "minute"}  name="delete_per"  onChange={(e) => updateForm({ delete_per: e.target.value })}/>
                       <Form.Check  type="radio" inline label="day"    value={'day'}     checked={form.delete_per === "day" }    name="delete_per"  onChange={(e) => updateForm({ delete_per: e.target.value })} />
                   </Form.Group>
+                  </Col>
+  </Row>
 
+  <Row>
+      <Col  xs={3}>    
+                  <Form.Label>Total Query:</Form.Label>
+                  <InputGroup className="mb-3">
+                    <Form.Control type="text"  value={form.total_query  || ''} onChange={(e) => updateForm({ total_query: e.target.value })}/>
+                  </InputGroup> 
+            </Col> 
+        <Col xs={5}>   
+      <Form.Text className="text-primary">Info: </Form.Text>
+                <br/>
+                <Form.Text className="text-muted">insert ....  </Form.Text>
+      </Col>
+      <Col xs={4}>  
+                  <Form.Label>Query per:</Form.Label>
+                  <Form.Group  controlId="query_per"> 
+                      <Form.Check  type="radio" inline label="second" value={'second'}  checked={form.query_per === "second" } name="query_per"  onChange={(e) => updateForm({ query_per: e.target.value })} />
+                      <Form.Check  type="radio" inline label="minute" value={'minute'}  checked={form.query_per === "minute"}  name="query_per"  onChange={(e) => updateForm({ query_per: e.target.value })}/>
+                      <Form.Check  type="radio" inline label="day"    value={'day'}     checked={form.query_per === "day" }    name="query_per"  onChange={(e) => updateForm({ query_per: e.target.value })} />
+                  </Form.Group>
+         </Col>
+  </Row>
+
+  
+  <Row>
+      <Col  xs={3}>    
                   <Form.Label>Concurrent write:</Form.Label>
                   <InputGroup className="mb-3">
                     <Form.Control type="text"  value={form.concurrent_write  || ''} onChange={(e) => updateForm({ concurrent_write: e.target.value })}/>
                   </InputGroup> 
-
+                  </Col>     
+        <Col xs={5}>
+      <Form.Text className="text-primary">Info: </Form.Text>
+                <br/>
+                <Form.Text className="text-muted">How many cocurrent write your application must handle at peaks</Form.Text>
+      </Col>
+      <Col xs={4}>  
                   <Form.Label>Concurrent written details:</Form.Label>
                   <Form.Group  controlId="concurrent_write_details"> 
                       <Form.Check  type="radio" inline label="Second"     value={'second'}      checked={form.concurrent_write_details === "second" }    name="concurrent_write_details"  onChange={(e) => updateForm({ concurrent_write_details: e.target.value })} />
                       <Form.Check  type="radio" inline label="Minute" value={'minute'}  checked={form.concurrent_write_details === "minute"}       name="concurrent_write_details"  onChange={(e) => updateForm({ concurrent_write_details: e.target.value })}/>
                       <Form.Check  type="radio" inline label="Day"    value={'day'}     checked={form.concurrent_write_details === "day" }   name="concurrent_write_details"  onChange={(e) => updateForm({ concurrent_write_details: e.target.value })} />
                   </Form.Group>
-
+                  </Col>
+  </Row>
+  <Row>
+      <Col  xs={3}>  
                   <Form.Label>Concurrent read:</Form.Label>
                   <InputGroup className="mb-3">
                     <Form.Control type="text"  value={form.concurrent_read  || ''} onChange={(e) => updateForm({ concurrent_read: e.target.value })}/>
                   </InputGroup> 
-
+                  </Col>     
+   <Col xs={5}>  
+      <Form.Text className="text-primary">Info: </Form.Text>
+                <br/>
+                <Form.Text className="text-muted">How many cocurrent read your application must handle at peaks</Form.Text>
+      </Col>
+      <Col xs={4}>  
                   <Form.Label>Concurrent read details:</Form.Label>
                   <Form.Group  controlId="concurrent_read_details"> 
                       <Form.Check  type="radio" inline label="Second"     value={'second'}      checked={form.concurrent_read_details === "second" }    name="concurrent_read_details"  onChange={(e) => updateForm({ concurrent_read_details: e.target.value })} />
@@ -712,7 +784,8 @@ async function onSubmit(e) {
                       <Form.Check  type="radio" inline label="Day"    value={'day'}     checked={form.concurrent_read_details === "day" }   name="concurrent_read_details"  onChange={(e) => updateForm({ concurrent_read_details: e.target.value })} />
                   </Form.Group>
 
-
+                  </Col>
+  </Row>
         
       </Tab>
 
