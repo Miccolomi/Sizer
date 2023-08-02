@@ -12,13 +12,13 @@ const sendEmail = async (email, subject, payload, template) => {
       port: process.env.EMAIL_PORT,
       auth: {
         user: process.env.EMAIL_USERNAME,
-        pass: process.env.EMAIL_PASSWORD, // naturally, replace both with your real credentials or an application-specific password
+        pass: process.env.EMAIL_PASSWORD, 
       },
     });
 
     //debug
-    console.log("--USERNAME EMAIL: "+process.env.EMAIL_USERNAME ); 
-    console.log("--PASSWORD EMAIL: "+process.env.EMAIL_PASSWORD ); 
+    //console.log("--USERNAME EMAIL: "+process.env.EMAIL_USERNAME ); 
+    //console.log("--PASSWORD EMAIL: "+process.env.EMAIL_PASSWORD ); 
 
 
     const source = fs.readFileSync(path.join(__dirname, template), "utf8");
@@ -36,10 +36,19 @@ const sendEmail = async (email, subject, payload, template) => {
     transporter.sendMail(options(), (error, info) => {
       if (error) {
        
-        console.log("errore nel invio mail !!!!!!"+error ); 
+        console.log("errore nel invio mail : "+error ); 
         return error;
 
       } else {
+        console.log("INFO MAIL : "+"info.messageId :"+info.messageId );  
+        console.log("INFO MAIL : "+"info.envelope :"+info.envelope );  
+        console.log("INFO MAIL : "+"info.accepted :"+info.accepted );  
+        console.log("INFO MAIL : "+"info.rejected :"+info.rejected );  
+        console.log("INFO MAIL : "+"info.pending :"+info.pending );  
+        console.log("INFO MAIL : "+"info.response :"+info.response );  
+        
+
+
         console.log("___EMAIL INVIATA___"); 
         return res.status(200).json({
           success: true,
@@ -52,14 +61,5 @@ const sendEmail = async (email, subject, payload, template) => {
   }
 };
 
-/*
-Example:
-sendEmail(
-  "youremail@gmail.com,
-  "Email subject",
-  { name: "Eze" },
-  "./templates/layouts/main.handlebars"
-);
-*/
 
 module.exports = sendEmail;

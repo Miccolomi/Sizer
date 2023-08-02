@@ -264,7 +264,7 @@ app.post("/info_mongo", auth, async (request, response) => {
   const hash = await bcrypt.hash(randomstring, Number(bcryptSalt));
 
   // DEVO CONTRLLARE LA MAIL DEL CLIENTE SE ESISTE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
-  const userexist = await User.findOne({ "email": email }); //Salvo il cliente sole se non esiste !!! altrimenti non lo salvo !!!!
+  const userexist = await User.findOne({ "email": email, "type": "EXT" }); //Salvo il cliente sole se non esiste !!! altrimenti non lo salvo !!!!
 
   // save the new project
   await new_project.save().then((result) => {
@@ -274,26 +274,29 @@ app.post("/info_mongo", auth, async (request, response) => {
 
     //Invio mail al cliente
     const clientURL = process.env.CLIENT_URL;
-    console.log("______COSTRUZIONE URL PER LA MAIL A CLIENTE_____" + clientURL);
+   // console.log("______COSTRUZIONE URL PER LA MAIL A CLIENTE _____" + clientURL);
 
     const link = `${clientURL}`;
-    console.log("______COSTRUZIONE LINK PER LA MAIL A CLIENTE_____" + link);
+   // console.log("______COSTRUZIONE LINK PER LA MAIL A CLIENTE_____" + link);
 
     const email_for_send = process.env.EMAIL_DEV; // se sono in sviluppo prendo questa altrimenti prende quella reale !!!!!!!!!!!
-    console.log("______EMAIL FOR SEND_____" + email_for_send);
+    
 
-    if (email_for_send){
+    if (email_for_send){ // qui prendo quella di test...
       email = email_for_send; 
-    }
-    else { // quindi sono in produzione e prendo la vera mail
+      console.log("______EMAIL DI TEST PER INVIO_____" + email);
+    } 
+    else { // in produzione e prendo la vera mail...
       email = email;
+      console.log("______EMAIL DI PRODUZIONE PER INVIO_____" + email);
     }
 
-    console.log("______EMAIL DA INSERIRE DEL NUOVO UTENTE_____" + email);
     
     if (!userexist) { //  una mail può avere + progetti associati
    
+      console.log("______UTENTE NON ESISTE. LO CREO_____" );
       // Salvo nuovo utente - cliente ESTERNO 
+      
       
     const user = new User({
       email: email,
@@ -305,9 +308,9 @@ app.post("/info_mongo", auth, async (request, response) => {
 
     // save the new user
     user.save()
-    console.log("______SALVO UTENTE_____");
+    console.log("______SALVO NUOVO UTENTE_____");
 
-    if(sendemail){
+    if(sendemail){ // se ho fleggato invio della mail
 
     sendEmail(
       email,
@@ -329,6 +332,7 @@ app.post("/info_mongo", auth, async (request, response) => {
 
     }
     else{ // quindi cliente è gia registrato e non lo devo salvare 2 volte..
+      console.log("______UTENTE ESISTE. NON LO CREO_____" );
 
       if(sendemail){
       sendEmail(
