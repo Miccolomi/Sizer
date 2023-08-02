@@ -26,7 +26,7 @@ const ProjectSchema = new mongoose.Schema(
   email: {
     type: String,
     required: [true, "Please provide valide Customer Email!"],
-    unique: true,
+    //unique: true,
     lowercase: true,
     validate: (value) => {
       return validator.isEmail(value)

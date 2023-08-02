@@ -64,10 +64,7 @@ useEffect(() => {
 
   const handleSubmit = (e) => {
 
- 
 
-
-  
        // e.preventDefault();
        // e.stopPropagation();
 
@@ -82,9 +79,6 @@ useEffect(() => {
       }
   
       setValidated(true);
-
-
-
       console.log("______SONO IN AUTH COMPONENT handleSubmit _____"); 
 
 

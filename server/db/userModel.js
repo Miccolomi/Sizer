@@ -7,7 +7,7 @@ const UserSchema = new mongoose.Schema(
     email: {
         type: String,
         required: [true, "Please provide an Email!"],
-        unique: false, // attenzione questo potrebbe creare problemi !!!!
+        unique: true, // attenzione questo potrebbe creare problemi !!!!
         lowercase: true,
         validate: (value) => {
           return validator.isEmail(value)
@@ -29,6 +29,12 @@ const UserSchema = new mongoose.Schema(
         required: [true, "Please provide type of USER!"],
         unique: false,
       }
+      //,
+      //id_prj : {
+       // type: String,
+     //   required: [true, "ID project missing!"], 
+       // unique: false,
+      //}
 },     
 { timestamps: true }
 

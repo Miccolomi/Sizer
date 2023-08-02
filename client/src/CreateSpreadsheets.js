@@ -6,6 +6,8 @@ import Alert from 'react-bootstrap/Alert';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
+import { Link } from "react-router-dom";
+
 
 import styles from "./utils/newproject/styles.module.css";
 
@@ -24,6 +26,7 @@ export default  function CreateSpreadsheets() {
     const [message_non_trovato, setMessageNonTrovato] = useState(null);
     const [message_non_trovato1, setMessageNonTrovato1] = useState(null);
     const [messageResult, setMessageResult] = useState(null);
+    const [messageResult2, setMessageResult2] = useState(null);
     const [message_error, setMessageError] = useState(null);
     const id = params.id.toString();
     const navigate = useNavigate();
@@ -94,6 +97,7 @@ export default  function CreateSpreadsheets() {
        // setMessageTrovato1(null);
         setMessageError(null); 
         setMessageResult(null);
+        setMessageResult2(null);
         
 
     const configuration_create = {
@@ -112,7 +116,12 @@ export default  function CreateSpreadsheets() {
  
             console.log("SONO IN makeSizer - sono in result - risultato: "+ result.data); 
 
-            setMessageResult(result.data.message + " " + result.data.info_cell + " - "+ result.data.url );
+            setMessageResult(result.data.message + " " + result.data.info_cell   );
+
+            setMessageResult2( 
+            <a href={ result.data.url.split(" ").filter(i => i.startsWith("https://")).toString() } target="_blank" > Your spreadsheet</a> 
+            );
+
 
            setIsLoading(false);   // Hide loading screen 
       })
@@ -151,7 +160,7 @@ export default  function CreateSpreadsheets() {
               <div>
                  Please follow this step (only for new sizer) <br/> <p/>
                 1) Create a new Google Sheet on your G Drive Home, or subdirectory if you prefer, and rename as you like.<br/> 
-                2) Share the document with "mongodbsizer@sizersheet.iam.gserviceaccount.com"    <br/> 
+                2) Share the document with "account-mongoexcel@mongoexcel.iam.gserviceaccount.com"    <br/> 
                 3) Copy the spreadshet ID like this: <img src={google_image} />  and paste here.<br/> 
              
                 
@@ -197,6 +206,16 @@ export default  function CreateSpreadsheets() {
                             <hr />
                             {messageResult}
                             <p className="mb-0">
+                             <p> </p>
+                            {messageResult2}
+
+                           
+
+
+                               
+                             
+
+
                             </p>
                         </Alert>}
                     

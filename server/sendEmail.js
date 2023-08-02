@@ -16,6 +16,11 @@ const sendEmail = async (email, subject, payload, template) => {
       },
     });
 
+    //debug
+    console.log("--USERNAME EMAIL: "+process.env.EMAIL_USERNAME ); 
+    console.log("--PASSWORD EMAIL: "+process.env.EMAIL_PASSWORD ); 
+
+
     const source = fs.readFileSync(path.join(__dirname, template), "utf8");
     const compiledTemplate = handlebars.compile(source);
     const options = () => {
@@ -24,7 +29,7 @@ const sendEmail = async (email, subject, payload, template) => {
         to: email,
         subject: subject,
         html: compiledTemplate(payload),
-      };
+      }; 
     };
 
     // Send email

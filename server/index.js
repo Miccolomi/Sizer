@@ -37,17 +37,26 @@ const bodyParser = require('body-parser');
 //Bodyparser Middleware
 app.use(express.json())
 
+
+/////DB///////////////
+
 // require database connection 
-const dbConnect = require("./db/dbConnect");
+const Database = require("./db/dbConnect");
+
 // execute database connection 
+
+Database.connect();
+/*
 try{
-dbConnect();
+  dbConnect.dbConnect();
 }
 catch{
 
   res.json({ message: "Not Connect to MongoDB " });
 
 }
+*/
+
 // Have Node serve the files for our built React app
 // console.log("__dirname: " + __dirname);
 app.use(express.static(path.resolve(__dirname, '../client/build')));
@@ -98,8 +107,8 @@ app.post("/register", async (request, response) => {
     });
   }
 
-  console.log("email: " + email);
-  console.log("password: " + password);
+ // console.log("email: " + email);
+ // console.log("password: " + password);
 
   // check if user already exist
   //await User.findOne({ 'email' : email });
@@ -134,7 +143,7 @@ app.post("/register", async (request, response) => {
           // catch error if the new user wasn't added successfully to the database
           .catch((error) => {
             response.status(500).send({
-              message: "Error creating User, User wasn't added successfully to the database",
+              message: "Error creating User, User wasn't added successfully to the database: " + error,
               error,
             });
           });
@@ -216,9 +225,7 @@ app.post("/login", async (request, response) => {
 // INFO MONGO endpoint
 app.post("/info_mongo", auth, async (request, response) => {
 
-
-
-  console.log("______sono in APP info_mongo_____");
+  console.log("______sono in index.js function info_mongo_____");
 
   // Get user input
   const { customer } = request.body;
@@ -253,24 +260,27 @@ app.post("/info_mongo", auth, async (request, response) => {
 
   // password temporanea
   var randomstring = Math.random().toString(36).slice(-8);
-  console.log("______COSTRUZIONE randomstring PER LA MAIL_____" + randomstring);
+  console.log("______COSTRUZIONE password randomstring PER LA MAIL da inviare al cliente_____: " + randomstring);
   const hash = await bcrypt.hash(randomstring, Number(bcryptSalt));
 
-  // DEVO CONTRLLA RE LA MAIL DEL CLIENTE SE ESISTE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! altrimenti non entra se ha 2 progettoi assegnati alla stessa persona!!!!!!!!!
+  // DEVO CONTRLLARE LA MAIL DEL CLIENTE SE ESISTE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
   const userexist = await User.findOne({ "email": email }); //Salvo il cliente sole se non esiste !!! altrimenti non lo salvo !!!!
 
-  // save the new user
+  // save the new project
   await new_project.save().then((result) => {
 
-   
+    id_progetto = result.id;
+    console.log("______ID DEL PROGETTO SALVATO_____" + id_progetto); // importante da mettere ovunque
+
     //Invio mail al cliente
     const clientURL = process.env.CLIENT_URL;
-    console.log("______COSTRUZIONE URL PER LA MAIL_____" + clientURL);
+    console.log("______COSTRUZIONE URL PER LA MAIL A CLIENTE_____" + clientURL);
 
     const link = `${clientURL}`;
-    console.log("______COSTRUZIONE LINK PER LA MAIL_____" + link);
+    console.log("______COSTRUZIONE LINK PER LA MAIL A CLIENTE_____" + link);
 
     const email_for_send = process.env.EMAIL_DEV; // se sono in sviluppo prendo questa altrimenti prende quella reale !!!!!!!!!!!
+    console.log("______EMAIL FOR SEND_____" + email_for_send);
 
     if (email_for_send){
       email = email_for_send; 
@@ -278,15 +288,19 @@ app.post("/info_mongo", auth, async (request, response) => {
     else { // quindi sono in produzione e prendo la vera mail
       email = email;
     }
+
+    console.log("______EMAIL DA INSERIRE DEL NUOVO UTENTE_____" + email);
     
-    if (!userexist) {
+    if (!userexist) { //  una mail può avere + progetti associati
    
-      // Salvo nuovo utente perchè non esiste
+      // Salvo nuovo utente - cliente ESTERNO 
+      
     const user = new User({
       email: email,
       password: hash,
       change_password: 0,
-      type: "EXT"
+      type: "EXT",
+    //  id_prj: id_progetto,
     });
 
     // save the new user
@@ -328,20 +342,17 @@ app.post("/info_mongo", auth, async (request, response) => {
         "/template/new_project_for_you.handlebars"
       );
   
-      console.log("______EMAIL A UTENTE --ESISTENTE-- INVIATA_____");
+      console.log("______EMAIL A UTENTE ESISTENTE INVIATA_____");
       }
       response.status(201).send({ message: "Project Created Successfully and Email send to customer !", result });
 
     }
-
-   
-
-  
-
+    
+ 
   })
     .catch((error) => {
-      console.log("______ERRORE IN PROJECT _______NON SALVATO_____" + error);
-      return response.status(400).send({ message: "Unable to save Project, details:" + error });
+      console.log("______ERRORE NEL SALVATAGGIO DEL PROGETTO_PROGETTO_NON SALVATO_____: " + error);
+      return response.status(400).send({ message: "Unable to save Project, details: " + error });
     })
 
   // fine insert
@@ -363,12 +374,7 @@ app.post("/project_list_int", auth, async (request, response) => {
   const query_mongo = { user_logon: user_logon }; 
   
   let list = null;
-  //const options = {
-  // sort returned documents in ascending order by title (A->Z)
-  // sort: { customer: 1},
-  // Include only the `title` and `imdb` fields in each returned document
-  //  projection: { customer: 1, project: 1, usecase: 1 }, 
-  //};
+
 
   try {
      list = await Project.find(query_mongo);
@@ -390,7 +396,7 @@ app.post("/project_list_int", auth, async (request, response) => {
 // PROJECT LIST EXTERNAL endpoint
 app.post("/project_list_ext", auth, async (request, response) => {
 
-  console.log("______sono in APP PROJECT LIST QUERY_____");
+  console.log("______sono in APP PROJECT LIST EXT QUERY_____");
   // prendo utente loggato
 
   const user_logon = request.query.user;
@@ -738,7 +744,7 @@ app.post("/_getUserType", async (request, response)=> {
 //requests to the CREATE Google Sheets via API
 app.post("/create_spreadsheets", async (request, response) => {
 
-  console.log("______sono in NODE create_spreadsheets_____");
+  console.log("______sono in NODE create_spreadsheets NOOOOOOOOOOOOO DA CANCELLARE !!!!!!!!!!_____");
 
 // id del progetto 
   let myquery = { _id: ObjectId(request.query.id) };
@@ -1247,12 +1253,12 @@ async function updateValues(spreadsheetId, valueInputOption, data, auth) {
 });
 
 
-//requests to the CREATE Google Sheets via API
+//requests to the CREATE Google Sheets via API v2
 app.post("/create_spreadsheets_v2", async (request, response) => {
 
   console.log("______sono in NODE create_spreadsheets v2 Service Account_____");
 
- const GCLOUD_PROJECT = "sizersheet" // {project ID of your google project}
+ //const GCLOUD_PROJECT = "sizersheet" // {project ID of your google project}
  const GOOGLE_APPLICATION_CREDENTIALS = "sizersheet-serviceAccount.json"    
  const { google } = require('googleapis')
  const SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
@@ -1264,8 +1270,6 @@ app.post("/create_spreadsheets_v2", async (request, response) => {
  let spreadsheetId = "";
 
 //const sheetName = "Sizer_Template" // process.argv[3];
-
-
 
  const valueInputOption = "USER_ENTERED";
  const fs = require('fs').promises;
@@ -1281,16 +1285,16 @@ app.post("/create_spreadsheets_v2", async (request, response) => {
   
   const CreaExcel = async () => {
 
-  
 
     try {
        // 1) mi autentico
-       const auth = new google.auth.GoogleAuth({ keyFile: GOOGLE_APPLICATION_CREDENTIALS, //the key file
-        //url to spreadsheets API
-        scopes: "https://www.googleapis.com/auth/spreadsheets", 
-    });
-      console.log("_____create_spreadsheets v2 sono autorizzat _____");
+       const auth = new google.auth.GoogleAuth({ 
 
+        keyFile: GOOGLE_APPLICATION_CREDENTIALS, //the key file url to spreadsheets API
+        scopes: "https://www.googleapis.com/auth/spreadsheets", 
+
+    });
+     
       
         // 2 Auth client Object
         const authClientObject = await auth.getClient();
@@ -1307,7 +1311,7 @@ app.post("/create_spreadsheets_v2", async (request, response) => {
        //Se si lo promuovo a spreadsheetId
        if(spreadsheetId_dal_db){
         spreadsheetId = spreadsheetId_dal_db; //quel nel database 
-        console.log("_____create_spreadsheets v2 spreadsheetId= " +spreadsheetId);
+        console.log("_____create_spreadsheets dal DB v2 spreadsheetId= " +spreadsheetId);
        }
        else {
         spreadsheetId = request.query.sp_id  // quello che mi passa utente "1S5msECluySB2zFcq-LU1CcRFUeD1ghVHUqe31f9pIC0" //process.argv[2];
@@ -1315,13 +1319,21 @@ app.post("/create_spreadsheets_v2", async (request, response) => {
         console.log("_____create_spreadsheets v2 spreadsheetId= " +spreadsheetId);
        }
 
-        // 5 Get metadata about spreadsheet
-        const sheetInfo = await googleSheetsInstance.spreadsheets.get({
+       try {
+         // 5 Get metadata about spreadsheet
+         const sheetInfo = await googleSheetsInstance.spreadsheets.get({
           auth,
           spreadsheetId,
        });
+       console.log("_____create_spreadsheets v2 sono autorizzato _____");
        console.log("_____ create_spreadsheetslink al file: " + sheetInfo.data.spreadsheetUrl);
        URL_FILE = sheetInfo.data.spreadsheetUrl;
+        
+       } catch (error) {
+        console.log("_____create_spreadsheets v2 NON SONO AUTORIZZATO _____ " +error );
+        return response.status(400).json({ message: error.message })
+       }
+       
 
         // 6) prendo i dati del progetto dal db
     const data = await getProjectData(myquery);
