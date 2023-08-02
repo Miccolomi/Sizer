@@ -9,7 +9,7 @@ import { useParams, useNavigate } from "react-router";
 import axios from "axios";
 import Cookies from "universal-cookie";
 import styles from "./utils/newproject/styles.module.css";
-import Alert from 'react-bootstrap/Alert';
+import Alert from 'react-bootstrap/Alert'; 
 
 
 
